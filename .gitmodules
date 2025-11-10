@@ -1,0 +1,6 @@
+[submodule "tr"]
+	path = tr
+	url = https://github.com/NITTC-Robosemi/tr.git
+[submodule "tr-templates"]
+	path = tr-templates
+	url = https://github.com/NITTC-Robosemi/tr-templates.git

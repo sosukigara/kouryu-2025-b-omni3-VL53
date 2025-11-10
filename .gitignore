@@ -1,0 +1,9 @@
+.metadata/
+Debug/
+Release/
+.settings/
+.mxproject
+*.launch
+.vscode/
+
+/projects/tr/

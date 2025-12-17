@@ -3,10 +3,8 @@
 
 #include <code.hpp>
 
-
 // Project headers
 #include <cstdint>
-#include <optional>
 #include <param.hpp>
 #include <shared.hpp>
 #include <tr/prelude.hpp>
@@ -50,12 +48,6 @@ mods::Dji<Fdcan> *dji;
 
 EnumMap<mechs::omni3::Id, HeadState> now_states_global = {};
 
-static inline float head_angle_deg(const HeadState &s) {
-    return s.angle.get_value() * 180.0F / 3.141592653589793F;
-}
-
-static inline Qty<Radian> normalize_angle(const Qty<Radian> a) { return a; }
-
 // omni3
 mechs::omni3::Ik ik = mechs::omni3::Ik(OMNI3_CONFIG);
 Transform2d target_transform = {0_mps, 0_mps, 0_radps};
@@ -64,7 +56,7 @@ Transform2d target_transform_max = {3_mps, 3_mps, 0_radps};
 
 controllers::ControlPosition<Qty<Radian>, Qty<Ampere>> *cp;
 
-EnumMap<mechs::omni3::Id, std::optional<ctls::ControlVelocity<Qty<Radian>, Qty<Ampere>>>> cvs;
+EnumMap<mechs::omni3::Id, ctls::ControlVelocity<Qty<Radian>, Qty<Ampere>> *> cvs;
 
 void get_terunet() {}
 void set_terunet() {}
@@ -83,7 +75,9 @@ void setup() {
     dji = new mods::Dji<Fdcan>(new Fdcan(&hfdcan3), DJI_SAMPLING_PERIOD, DJI_DETAILS);
 
     for (const mechs::omni3::Id id : AllVariants<mechs::omni3::Id>()) {
-        cvs[id].emplace(TIMER_PERIOD, CV_PARAM, CV_CONFIG, true);
+        cvs[id] = new ctls::ControlVelocity<Qty<Radian>, Qty<Ampere>>(
+            TIMER_PERIOD, CV_PARAM, CV_CONFIG, true
+        );
     }
 
     initialized = true;

@@ -469,8 +469,8 @@ void loop() {
         fk->update();
 
         auto result_transform = fk->get_transform();
-        live_pos_x_m += (float)(result_transform.velocity.x * dt);
-        live_pos_y_m += (float)(result_transform.velocity.y * dt);
+        live_pos_x_m += result_transform.velocity.x.get_value() * dt.get_value();
+        live_pos_y_m += result_transform.velocity.y.get_value() * dt.get_value();
         live_pos_yaw_deg = (yaw - yaw_offset).get_value() * 180.0f / 3.14159265f;
     }
     last_odom_tick = now_tick;

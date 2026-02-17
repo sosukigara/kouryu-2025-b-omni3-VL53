@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../hardwares/i2c/i2c.hpp"
+#include "../tr/tr/hardwares/i2c/i2c.hpp"
 
 #ifdef TR_I2C_DEFINED
 
@@ -8,8 +8,8 @@
 #include <cstdint>
 #include <optional>
 
-#include "../../messages/unit_literals/unit_literals.hpp"
-#include "../../messages/units/units.hpp"
+#include "../tr/tr/messages/unit_literals/unit_literals.hpp"
+#include "../tr/tr/messages/units/units.hpp"
 #include "defines.hpp"
 
 namespace tr::modules {

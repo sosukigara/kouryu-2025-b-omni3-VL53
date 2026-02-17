@@ -111,7 +111,7 @@ volatile float vl53_p_gain = 0.003f;  // Gain: (e.g. 0.003 -> 100mm diff = 0.3m/
 volatile float vl53_max_speed_mps = 0.6f;  // Speed Limit
 volatile float vl53_dir_x = -1.0f;  // Direction vector X (Updated to -1.0)
 volatile float vl53_dir_y = 0.0f;   // Direction vector Y
-volatile float heading_offset_rad = 0.3f;  // Mounting offset (calibrated value)
+volatile float heading_offset_rad = 0.5236f;  // Mounting offset (30 degrees)
 
 // mods::Vl53l0x *vl53;
 

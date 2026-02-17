@@ -105,6 +105,13 @@ volatile uint8_t debug_bno_error = 255;
 volatile bool imu_updated = false;
 
 // Tuning Params (Live Expressions)
+volatile float live_kp = 0.0f;
+volatile float live_ki = 0.0f;
+volatile float live_kd = 0.0f;
+volatile float last_live_kp = -1.0f;  // 変化検知用
+volatile float last_live_ki = -1.0f;
+volatile float last_live_kd = -1.0f;
+
 volatile float vl53_target_dist_mm = 300.0f;
 volatile float vl53_tolerance_mm = 30.0f;
 volatile float vl53_p_gain = 0.003f;  // Gain: (e.g. 0.003 -> 100mm diff = 0.3m/s)
@@ -169,6 +176,14 @@ void setup() {
         );
     }
 
+    // Initialize Live PID Params
+    live_kp = CV_PARAM.pid_param.kp;
+    live_ki = CV_PARAM.pid_param.ki;
+    live_kd = CV_PARAM.pid_param.kd;
+    last_live_kp = live_kp;
+    last_live_ki = live_ki;
+    last_live_kd = live_kd;
+
     initialized = true;
 
     enable_irq();
@@ -201,7 +216,7 @@ void try_vl53_init() {
     HAL_Delay(10);  // Wait for boot (Reduced from 50ms, need 1.2ms min)
 
     // Init Sensor 1
-    vl53_1->set_i2c_address(0x29);  // Reset internal knowledge to default
+    vl53_1->set_local_address(0x29);  // Reset internal knowledge to default
     if (vl53_1->init()) {
         vl53_1->set_i2c_address(0x30);
         // vl53_1->set_high_speed_mode(); // Disabled for stability
@@ -216,7 +231,7 @@ void try_vl53_init() {
     HAL_Delay(10);  // Wait for boot (Reduced from 50ms)
 
     // Init Sensor 2
-    vl53_2->set_i2c_address(0x29);  // Reset internal
+    vl53_2->set_local_address(0x29);  // Reset internal
     if (vl53_2->init()) {
         vl53_2->set_i2c_address(0x31);
         // vl53_2->set_high_speed_mode(); // Disabled for stability (33ms default)
@@ -231,6 +246,22 @@ void try_vl53_init() {
 
 void loop() {
     heartbeat = HAL_GetTick();
+
+    // Live PID Update Check
+    if (live_kp != last_live_kp || live_ki != last_live_ki || live_kd != last_live_kd) {
+        last_live_kp = live_kp;
+        last_live_ki = live_ki;
+        last_live_kd = live_kd;
+
+        tr::controllers::control_velocity::Param new_param = {
+            .pid_param = {.kp = live_kp, .ki = live_ki, .kd = live_kd}
+        };
+
+        for (const mechs::omni3::Id id : AllVariants<mechs::omni3::Id>()) {
+            cvs[id]->set_param(new_param);
+        }
+    }
+
     get_terunet();
 
     // espdbt

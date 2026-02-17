@@ -15,7 +15,7 @@
 
 constexpr Qty<Second> DJI_SAMPLING_PERIOD = 1 / 1_kHz;
 constexpr Qty<Second> TIMER_PERIOD_TWO = 1 / 1_kHz;
-Transform2d target_transform_max = {1.5_mps, 1.5_mps, 4.5_radps};
+Transform2d target_transform_max = {2.5_mps, 2.5_mps, 4.5_radps};
 
 constexpr EnumMap<mechs::omni3::Id, mods::dji::Id> OMNI3_TO_DJI = {
     {mechs::omni3::Id::ONE, mods::dji::Id::ONE},
@@ -49,7 +49,7 @@ constexpr mechs::omni3::Config OMNI3_CONFIG = {
 constexpr ctls::control_velocity::Config<Qty<Radian>, Qty<Ampere>> CV_CONFIG = {
     .output_range = {-10_A, 10_A},
     .velocity_range = {none, none},
-    .acceleration_range = {-35_radps2, 35_radps2},
+    .acceleration_range = {-50_radps2, 50_radps2},
     //.acceleration_range = {none, none},
 };
 

@@ -428,6 +428,35 @@ void loop() {
             target_transform.velocity.x = (vel_mag * vl53_dir_x) * 1.0_mps;
             target_transform.velocity.y = (vel_mag * vl53_dir_y) * 1.0_mps;
         }
+    } else if (joy.buttons[mods::espdbt::Button::L3]) {
+        // Go to Origin (0, 0)
+        float error_x = 0.0f - live_pos_x_m;
+        float error_y = 0.0f - live_pos_y_m;
+        float dist_sq = error_x * error_x + error_y * error_y;
+
+        if (dist_sq > 0.0025f) {  // Deadband 5cm (0.05^2 = 0.0025)
+            // P-Control
+            float kp = 1.0f;
+            float max_speed = 0.5f;
+
+            float vx = error_x * kp;
+            float vy = error_y * kp;
+
+            // Clamp Speed
+            float speed = std::sqrt(vx * vx + vy * vy);
+            if (speed > max_speed) {
+                float scale = max_speed / speed;
+                vx *= scale;
+                vy *= scale;
+            }
+
+            // Apply to Target (Global Frame)
+            target_transform.velocity.x = Qty<MeterPerSecond>(vx * 1.0f);
+            target_transform.velocity.y = Qty<MeterPerSecond>(vy * 1.0f);
+        } else {
+            target_transform.velocity.x = 0_mps;
+            target_transform.velocity.y = 0_mps;
+        }
     } else if (joy.buttons[mods::espdbt::Button::CROSS]) {
         // Sensor-based P-Control (Using Sensor 2 - Opposite Action)
         float current_dist = vl53_2_distance_mm;
@@ -449,6 +478,8 @@ void loop() {
             target_transform.velocity.y = (vel_mag * -vl53_dir_y) * 1.0_mps;
         }
     }
+
+    // Fix Coordinate System with Mounting Offset (adjustable via heading_offset_rad)
 
     // Fix Coordinate System with Mounting Offset (adjustable via heading_offset_rad)
     // Default: 45 deg = PI/4 = 0.7854 rad
@@ -475,11 +506,20 @@ void loop() {
     }
     last_odom_tick = now_tick;
 
-    // Position Reset (SHARE Button)
-    if (joy.buttons[mods::espdbt::Button::SHARE]) {
-        live_pos_x_m = 0.0f;
-        live_pos_y_m = 0.0f;
-        yaw_offset = yaw;  // リセット時に現在の向きを正面とする
+    // Position Reset (L3: Left Stick Button) REMOVED - Moved to control loop
+    // if (joy.buttons[mods::espdbt::Button::L3]) { ... }
+
+    // Remote System Reset (OPTIONS + SHARE Long Press > 1s)
+    static uint32_t reset_combo_start = 0;
+    if (joy.buttons[mods::espdbt::Button::OPTIONS] &&
+        joy.buttons[mods::espdbt::Button::SHARE]) {
+        if (reset_combo_start == 0) {
+            reset_combo_start = HAL_GetTick();
+        } else if (HAL_GetTick() - reset_combo_start > 1000) {
+            HAL_NVIC_SystemReset();
+        }
+    } else {
+        reset_combo_start = 0;
     }
 
     for (const mechs::omni3::Id id : AllVariants<mechs::omni3::Id>()) {

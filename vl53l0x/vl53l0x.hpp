@@ -9,7 +9,6 @@
 #include "defines.hpp"
 #include "main.h"  // Verify this path or inclusion
 
-
 namespace tr::modules {
 namespace _vl53l0x_impl {
 using namespace tr::messages::units;
@@ -400,11 +399,20 @@ public:
         } else {
             // L0X
             uint16_t range_mm = read_reg16(0x1E);
-            if (range_mm == 255 || range_mm > 8000)
-                range_mm = 8190;  // Error val
 
-            // Clear Interrupt
+            // Clear Interrupt immediately to allow next measurement
             write_reg(SYSTEM_INTERRUPT_CLEAR, 0x01);
+
+            // Check for I2C errors during read/write
+            if (last_hal_status != HAL_OK) return -2.0_m;
+
+            // 8190: Range Overflow (No target)
+            // 0: Range Underflow or invalid
+            // 20: Minimum reliable range?
+            if (range_mm == 0 || range_mm >= 8190) {
+                return -1.0_m;  // Treat as invalid/timeout to trigger re-init if persistent?
+                                // Or just ignore in higher level logic.
+            }
 
             return Qty<Meter>(static_cast<float>(range_mm) * 0.001F);
         }

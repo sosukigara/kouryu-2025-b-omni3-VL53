@@ -49,7 +49,7 @@ constexpr mechs::omni3::Config OMNI3_CONFIG = {
 constexpr ctls::control_velocity::Config<Qty<Radian>, Qty<Ampere>> CV_CONFIG = {
     .output_range = {-10_A, 10_A},
     .velocity_range = {none, none},
-    .acceleration_range = {-50_radps2, 50_radps2},
+    .acceleration_range = {-70_radps2, 70_radps2},
     //.acceleration_range = {none, none},
 };
 

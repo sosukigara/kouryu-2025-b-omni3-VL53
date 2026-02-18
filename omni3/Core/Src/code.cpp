@@ -159,7 +159,7 @@ void loop() {
         imu_updated = true;
     }
 
-    static uint32_t last_vl53_read_tick = 0;
+    static uint32_t last_vl53_read_tick = 0; //普通に割り込みに書けば10になるって言われて気付いたけど、バグったら怖いから移動させられない
     if (HAL_GetTick() - last_vl53_read_tick > 10) {
         last_vl53_read_tick = HAL_GetTick();
 

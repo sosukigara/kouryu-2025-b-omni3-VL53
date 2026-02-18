@@ -1,0 +1,3 @@
+arm-none-eabi-g++ "../Core/Src/code.cpp" -mcpu=cortex-m4 -std=gnu++20 -g3 -DDEBUG -DTR_HAL_ENABLED -DUSE_HAL_DRIVER -DSTM32G474xx -c -I../Core/Inc -I../tr -I../shared -I../Drivers/STM32G4xx_HAL_Driver/Inc -I../Drivers/STM32G4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32G4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -fno-rtti -fno-use-cxa-atexit -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/code.d" -MT"Core/Src/code.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/code.o"
+c:/w64devkit/bin/sh: arm-none-eabi-g++: not found
+make: *** [Core/Src/subdir.mk:44: Core/Src/code.o] Error 127

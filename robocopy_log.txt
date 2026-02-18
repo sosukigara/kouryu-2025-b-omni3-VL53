@@ -1,0 +1,261 @@
+
+-------------------------------------------------------------------------------
+   ROBOCOPY     ::     Windows の堅牢性の高いファイル コピー                              
+-------------------------------------------------------------------------------
+
+  開始: 2026年1月13日 17:59:24
+   コピー元 : C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\
+     コピー先 : C:\robocon\kourobo-2025-b-stm-VL53\omni3\
+
+    ファイル: *.*
+	    
+  オプション: *.* /V /S /E /DCOPY:DA /COPY:DAT /MOVE /NP /ETA /MT:32 /R:1000000 /W:30 
+
+------------------------------------------------------------------------------
+
+	  新しいファイル		    3546	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\.clangd
+	  新しいファイル		   59449	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\.cproject
+	  新しいファイル		    1261	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\.project
+	  新しいファイル		    9856	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\omni3.ioc
+	  新しいファイル		    5497	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\STM32G474RETX_FLASH.ld
+	  新しいファイル		    4268	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\.settings\language.settings.xml
+	  新しいファイル		     686	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\build_log.txt
+	  新しいファイル		    3484	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\makefile
+	  新しいファイル		    1459	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\objects.list
+	  新しいファイル		     285	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\objects.mk
+	  新しいファイル		     865	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\sources.mk
+	  新しいファイル		     187	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Core\Inc\code.hpp
+	  新しいファイル		    2313	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Core\Inc\main.h
+	  新しいファイル		    2060	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Core\Inc\param.hpp
+	  新しいファイル		     965	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Core\Inc\position_read.hpp
+	  新しいファイル		   13308	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Core\Inc\stm32g4xx_hal_conf.h
+	  新しいファイル		    2092	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Core\Inc\stm32g4xx_it.h
+	  新しいファイル		    7239	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Core\Src\code.cpp
+	  新しいファイル		   15517	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Core\Src\main.c
+	  新しいファイル		      94	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Core\Src\position_check.cpp
+	  新しいファイル		   15920	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Core\Src\stm32g4xx_hal_msp.c
+	  新しいファイル		    7258	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Core\Src\stm32g4xx_it.c
+	  新しいファイル		    3023	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Core\Src\syscalls.c
+	  新しいファイル		    2805	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Core\Src\sysmem.c
+	  新しいファイル		   10856	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Core\Src\system_stm32g4xx.c
+	  新しいファイル		   16127	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Core\Startup\startup_stm32g474retx.s
+	  新しいファイル		   11558	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\CMSIS\LICENSE.txt
+	  新しいファイル		     383	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\LICENSE.txt
+	  新しいファイル		   29026	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\CMSIS\Include\cmsis_armcc.h
+	  新しいファイル		   47343	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\CMSIS\Include\cmsis_armclang.h
+	  新しいファイル		   57115	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\CMSIS\Include\cmsis_armclang_ltm.h
+	  新しいファイル		    9764	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\CMSIS\Include\cmsis_compiler.h
+	  新しいファイル		   64795	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\CMSIS\Include\cmsis_gcc.h
+	  新しいファイル		   29127	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\CMSIS\Include\cmsis_iccarm.h
+	  新しいファイル		    1715	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\CMSIS\Include\cmsis_version.h
+	  新しいファイル		  171740	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\CMSIS\Include\core_armv81mml.h
+	  新しいファイル		   98060	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\CMSIS\Include\core_armv8mbl.h
+	  新しいファイル		  161332	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\CMSIS\Include\core_armv8mml.h
+	  新しいファイル		   42382	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\CMSIS\Include\core_cm0.h
+	  新しいファイル		   50609	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\CMSIS\Include\core_cm0plus.h
+	  新しいファイル		   43605	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\CMSIS\Include\core_cm1.h
+	  新しいファイル		  104693	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\CMSIS\Include\core_cm23.h
+	  新しいファイル		  111357	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\CMSIS\Include\core_cm3.h
+	  新しいファイル		  167995	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\CMSIS\Include\core_cm33.h
+	  新しいファイル		  168005	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\CMSIS\Include\core_cm35p.h
+	  新しいファイル		  122991	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\CMSIS\Include\core_cm4.h
+	  新しいファイル		  151761	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\CMSIS\Include\core_cm7.h
+	  新しいファイル		   47432	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\CMSIS\Include\core_sc000.h
+	  新しいファイル		  110326	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\CMSIS\Include\core_sc300.h
+	  新しいファイル		   11962	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\CMSIS\Include\mpu_armv7.h
+	  新しいファイル		   11601	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\CMSIS\Include\mpu_armv8.h
+	  新しいファイル		   24693	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal.c
+	  新しいファイル		   21708	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_cortex.c
+	  新しいファイル		   36178	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_dma.c
+	  新しいファイル		   10663	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_dma_ex.c
+	  新しいファイル		   18086	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_exti.c
+	  新しいファイル		  126527	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_fdcan.c
+	  新しいファイル		   24802	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_flash.c
+	  新しいファイル		   50397	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_flash_ex.c
+	  新しいファイル		    8190	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_flash_ramfunc.c
+	  新しいファイル		   18911	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_gpio.c
+	  新しいファイル		  251054	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_i2c.c
+	  新しいファイル		   11768	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_i2c_ex.c
+	  新しいファイル		   25115	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_pwr.c
+	  新しいファイル		   39341	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_pwr_ex.c
+	  新しいファイル		   52506	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_rcc.c
+	  新しいファイル		   65821	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_rcc_ex.c
+	  新しいファイル		  268523	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_tim.c
+	  新しいファイル		  140886	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_tim_ex.c
+	  新しいファイル		  164538	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_uart.c
+	  新しいファイル		       0	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Core\Src\code.cyclo
+	  新しいファイル		       0	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Core\Src\code.su
+	  新しいファイル		     524	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Core\Src\main.cyclo
+	  新しいファイル		    3805	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Core\Src\main.d
+	  新しいファイル		   1.3 m	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Core\Src\main.o
+	  新しいファイル		     632	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Core\Src\main.su
+	  新しいファイル		       0	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Core\Src\position_check.cyclo
+	  新しいファイル		      59	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Core\Src\position_check.d
+	  新しいファイル		   23420	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Core\Src\position_check.o
+	  新しいファイル		       0	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Core\Src\position_check.su
+	  新しいファイル		     531	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Core\Src\stm32g4xx_hal_msp.cyclo
+	  新しいファイル		    3783	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Core\Src\stm32g4xx_hal_msp.d
+	  新しいファイル		   1.3 m	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Core\Src\stm32g4xx_hal_msp.o
+	  新しいファイル		     606	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Core\Src\stm32g4xx_hal_msp.su
+	  新しいファイル		     748	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Core\Src\stm32g4xx_it.cyclo
+	  新しいファイル		    3833	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Core\Src\stm32g4xx_it.d
+	  新しいファイル		   1.3 m	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Core\Src\stm32g4xx_it.o
+	  新しいファイル		     846	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Core\Src\stm32g4xx_it.su
+	  新しいファイル		    3175	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Core\Src\subdir.mk
+	  新しいファイル		     712	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Core\Src\syscalls.cyclo
+	  新しいファイル		      45	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Core\Src\syscalls.d
+	  新しいファイル		   83684	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Core\Src\syscalls.o
+	  新しいファイル		     853	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Core\Src\syscalls.su
+	  新しいファイル		      35	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Core\Src\sysmem.cyclo
+	  新しいファイル		      41	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Core\Src\sysmem.d
+	  新しいファイル		   56136	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Core\Src\sysmem.o
+	  新しいファイル		      43	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Core\Src\sysmem.su
+	  新しいファイル		     113	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Core\Src\system_stm32g4xx.cyclo
+	  新しいファイル		    3741	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Core\Src\system_stm32g4xx.d
+	  新しいファイル		   1.2 m	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Core\Src\system_stm32g4xx.o
+	  新しいファイル		     128	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Core\Src\system_stm32g4xx.su
+	  新しいファイル		   37575	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_uart_ex.c
+	  新しいファイル		    2757	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\CMSIS\Include\tz_context.h
+	  新しいファイル		      83	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Core\Startup\startup_stm32g474retx.d
+	  新しいファイル		    8344	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Core\Startup\startup_stm32g474retx.o
+	  新しいファイル		    1002	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Core\Startup\subdir.mk
+	  新しいファイル		   29062	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal.h
+	  新しいファイル		   17917	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_cortex.h
+	  新しいファイル		    7177	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_def.h
+	  新しいファイル		   37499	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_dma.h
+	  新しいファイル		   12611	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_dma_ex.h
+	  新しいファイル		   12666	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_exti.h
+	  新しいファイル		   81419	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_fdcan.h
+	  新しいファイル		   47707	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_flash.h
+	  新しいファイル		    2496	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_flash_ex.h
+	  新しいファイル		    1991	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_flash_ramfunc.h
+	  新しいファイル		   14265	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_gpio.h
+	  新しいファイル		   15765	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_gpio_ex.h
+	  新しいファイル		   39660	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_i2c.h
+	  新しいファイル		    7547	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_i2c_ex.h
+	  新しいファイル		   15529	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_pwr.h
+	  新しいファイル		   31517	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_pwr_ex.h
+	  新しいファイル		  169956	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_rcc.h
+	  新しいファイル		   77070	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_rcc_ex.h
+	  新しいファイル		  163336	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_tim.h
+	  新しいファイル		  124380	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_tim_ex.h
+	  新しいファイル		   92106	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_uart.h
+	  新しいファイル		   53053	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_uart_ex.h
+	  新しいファイル		   76433	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_ll_bus.h
+	  新しいファイル		   24810	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_ll_cortex.h
+	  新しいファイル		   25051	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_ll_crs.h
+	  新しいファイル		  107301	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_ll_dma.h
+	  新しいファイル		   96197	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_ll_dmamux.h
+	  新しいファイル		   55732	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_ll_exti.h
+	  新しいファイル		   38956	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_ll_gpio.h
+	  新しいファイル		   86865	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_ll_i2c.h
+	  新しいファイル		   98628	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_ll_lpuart.h
+	  新しいファイル		   52584	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_ll_pwr.h
+	  新しいファイル		  116539	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_ll_rcc.h
+	  新しいファイル		   60767	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_ll_system.h
+	  新しいファイル		  315824	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_ll_tim.h
+	  新しいファイル		  179462	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_ll_usart.h
+	  新しいファイル		   12449	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_ll_utils.h
+	  新しいファイル		    3206	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal.cyclo
+	  新しいファイル		    3787	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal.d
+	  新しいファイル		   1.3 m	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal.o
+	  新しいファイル		    3481	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal.su
+	  新しいファイル		    2742	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_cortex.cyclo
+	  新しいファイル		    3801	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_cortex.d
+	  新しいファイル		   1.3 m	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_cortex.o
+	  新しいファイル		    3107	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_cortex.su
+	  新しいファイル		    1296	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_dma.cyclo
+	  新しいファイル		    3795	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_dma.d
+	  新しいファイル		   1.3 m	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_dma.o
+	  新しいファイル		    1414	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_dma.su
+	  新しいファイル		     501	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_dma_ex.cyclo
+	  新しいファイル		    3801	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_dma_ex.d
+	  新しいファイル		   1.2 m	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_dma_ex.o
+	  新しいファイル		     561	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_dma_ex.su
+	  新しいファイル		     799	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_exti.cyclo
+	  新しいファイル		    3797	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_exti.d
+	  新しいファイル		   1.2 m	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_exti.o
+	  新しいファイル		     871	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_exti.su
+	  新しいファイル		    6064	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_fdcan.cyclo
+	  新しいファイル		    3799	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_fdcan.d
+	  新しいファイル		   1.3 m	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_fdcan.o
+	  新しいファイル		    6555	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_fdcan.su
+	  新しいファイル		    1258	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_flash.cyclo
+	  新しいファイル		    3799	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_flash.d
+	  新しいファイル		   1.2 m	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_flash.o
+	  新しいファイル		    1407	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_flash.su
+	  新しいファイル		    2026	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_flash_ex.cyclo
+	  新しいファイル		    3805	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_flash_ex.d
+	  新しいファイル		   1.3 m	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_flash_ex.o
+	  新しいファイル		    2196	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_flash_ex.su
+	  新しいファイル		     318	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_flash_ramfunc.cyclo
+	  新しいファイル		    3815	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_flash_ramfunc.d
+	  新しいファイル		   1.2 m	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_flash_ramfunc.o
+	  新しいファイル		     339	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_flash_ramfunc.su
+	  新しいファイル		     682	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_gpio.cyclo
+	  新しいファイル		    3797	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_gpio.d
+	  新しいファイル		   1.2 m	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_gpio.o
+	  新しいファイル		     744	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_gpio.su
+	  新しいファイル		    7275	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_i2c.cyclo
+	  新しいファイル		    3795	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_i2c.d
+	  新しいファイル		   1.3 m	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_i2c.o
+	  新しいファイル		    7895	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_i2c.su
+	  新しいファイル		     576	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_i2c_ex.cyclo
+	  新しいファイル		    3801	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_i2c_ex.d
+	  新しいファイル		   1.2 m	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_i2c_ex.o
+	  新しいファイル		     624	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_i2c_ex.su
+	  新しいファイル		    1403	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_pwr.cyclo
+	  新しいファイル		    3795	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_pwr.d
+	  新しいファイル		   1.2 m	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_pwr.o
+	  新しいファイル		    1560	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_pwr.su
+	  新しいファイル		    3585	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_pwr_ex.cyclo
+	  新しいファイル		    3801	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_pwr_ex.d
+	  新しいファイル		   1.3 m	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_pwr_ex.o
+	  新しいファイル		    3912	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_pwr_ex.su
+	  新しいファイル		    1401	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_rcc.cyclo
+	  新しいファイル		    3795	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_rcc.d
+	  新しいファイル		   1.3 m	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_rcc.o
+	  新しいファイル		    1519	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_rcc.su
+	  新しいファイル		    1855	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_rcc_ex.cyclo
+	  新しいファイル		    3801	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_rcc_ex.d
+	  新しいファイル		   1.3 m	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_rcc_ex.o
+	  新しいファイル		    1993	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_rcc_ex.su
+	  新しいファイル		   10860	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_tim.cyclo
+	  新しいファイル		    3795	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_tim.d
+	  新しいファイル		   1.3 m	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_tim.o
+	  新しいファイル		   11783	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_tim.su
+	  新しいファイル		    6753	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_tim_ex.cyclo
+	  新しいファイル		    3801	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_tim_ex.d
+	  新しいファイル		   1.3 m	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_tim_ex.o
+	  新しいファイル		    7286	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_tim_ex.su
+	  新しいファイル		    6340	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_uart.cyclo
+	  新しいファイル		    3797	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_uart.d
+	  新しいファイル		   1.3 m	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_uart.o
+	  新しいファイル		    7578	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_uart.su
+	  新しいファイル		    1771	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_uart_ex.cyclo
+	  新しいファイル		    3803	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_uart_ex.d
+	  新しいファイル		   1.3 m	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_uart_ex.o
+	  新しいファイル		    1994	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_uart_ex.su
+	  新しいファイル		    9503	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Debug\Drivers\STM32G4xx_HAL_Driver\Src\subdir.mk
+	  新しいファイル		     377	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\CMSIS\Device\ST\STM32G4xx\LICENSE.txt
+	  新しいファイル		  242657	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\STM32G4xx_HAL_Driver\Inc\Legacy\stm32_hal_legacy.h
+	  新しいファイル		   1.3 m	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\CMSIS\Device\ST\STM32G4xx\Include\stm32g474xx.h
+	  新しいファイル		    9189	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\CMSIS\Device\ST\STM32G4xx\Include\stm32g4xx.h
+	  新しいファイル		    2356	C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\Drivers\CMSIS\Device\ST\STM32G4xx\Include\system_stm32g4xx.h
+
+------------------------------------------------------------------------------
+
+                  合計     コピー済み      スキップ       不一致        失敗    Extras
+   ディレクトリ:        24        24         0         0         0         0
+     ファイル:       229       229         0         0         0         0
+      バイト:   39.08 m   39.08 m         0         0         0         0
+       時刻:   0:00:05   0:00:00                       0:00:00   0:00:00
+
+
+       速度:           191,497,299 バイト/秒
+       速度:            10,957.563 MB/分
+   終了: 2026年1月13日 17:59:24
+
+
+2026/01/13 17:59:24 エラー 32 (0x00000020) コピー元ディレクトリを削除しています C:\robocon\kourobo-2025-b-stm-VL53\kouryu-2026-b-stm-workspace\omni3\
+プロセスはファイルにアクセスできません。別のプロセスが使用中です。

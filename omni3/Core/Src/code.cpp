@@ -53,13 +53,6 @@ volatile uint32_t vl53_2_last_update = 0;
 
 volatile bool imu_updated = false;
 
-volatile float live_kp = 0.0f;
-volatile float live_ki = 0.0f;
-volatile float live_kd = 0.0f;
-volatile float last_live_kp = -1.0f;
-volatile float last_live_ki = -1.0f;
-volatile float last_live_kd = -1.0f;
-
 volatile float vl53_target_dist_mm = 300.0f;
 volatile float vl53_tolerance_mm = 30.0f;
 volatile float vl53_p_gain = 0.003f;
@@ -77,20 +70,6 @@ tr::controllers::SyncControlVelocity<mechs::omni3::Id, Qty<Radian>, Qty<Ampere>>
 tr::hardwares::Timer *timer6;
 tr::hardwares::Timer *timer7;
 
-struct Position {
-    Qty<Meter> x = 0_m;
-    Qty<Meter> y = 0_m;
-};
-Position current_pos;
-
-uint32_t last_odom_tick = 0;
-
-volatile float live_pos_x_m = 0.0f;
-volatile float live_pos_y_m = 0.0f;
-volatile float live_pos_yaw_deg = 0.0f;
-
-mechs::omni3::Fk *fk;
-
 void get_terunet() {}
 void set_terunet() {}
 void try_vl53_init();
@@ -99,7 +78,6 @@ void setup() {
     disable_irq();
 
     ik = new mechs::omni3::Ik(OMNI3_CONFIG);
-    fk = new mechs::omni3::Fk(OMNI3_CONFIG);
 
     vl53_1 = new mods::Vl53l0x(&hi2c2);
     vl53_2 = new mods::Vl53l0x(&hi2c2);
@@ -116,13 +94,6 @@ void setup() {
     cvs = new tr::controllers::SyncControlVelocity<mechs::omni3::Id, Qty<Radian>, Qty<Ampere>>(
         TIMER_PERIOD, CV_PARAM, CV_CONFIG, true
     );
-
-    live_kp = CV_PARAM.pid_param.kp;
-    live_ki = CV_PARAM.pid_param.ki;
-    live_kd = CV_PARAM.pid_param.kd;
-    last_live_kp = live_kp;
-    last_live_ki = live_ki;
-    last_live_kd = live_kd;
 
     initialized = true;
 
@@ -176,25 +147,19 @@ void try_vl53_init() {
 
 void loop() {
     heartbeat = HAL_GetTick();
-
-    if (live_kp != last_live_kp || live_ki != last_live_ki || live_kd != last_live_kd) {
-        last_live_kp = live_kp;
-        last_live_ki = live_ki;
-        last_live_kd = live_kd;
-
-        tr::controllers::control_velocity::Param new_param = {
-            .pid_param = {.kp = live_kp, .ki = live_ki, .kd = live_kd}
-        };
-
-        for (const mechs::omni3::Id id : AllVariants<mechs::omni3::Id>()) {
-            cvs->set_param(id, new_param);
-        }
-    }
-
     get_terunet();
 
     espdbt->update();
     joy = espdbt->get();
+
+    static uint32_t last_imu_tick = 0;
+    if (imu != nullptr && (HAL_GetTick() - last_imu_tick > 10)) {
+        last_imu_tick = HAL_GetTick();
+        imu->rx();
+        imu->update();
+        yaw = imu->get_yaw();
+        imu_updated = true;
+    }
 
     static uint32_t last_vl53_read_tick = 0;
     if (HAL_GetTick() - last_vl53_read_tick > 10) {
@@ -239,16 +204,6 @@ void loop() {
         vl53_2_ok = false;
     }
 
-    static uint32_t last_imu_tick = 0;
-    if (imu != nullptr && (HAL_GetTick() - last_imu_tick > 10)) {
-        last_imu_tick = HAL_GetTick();
-        imu->rx();
-        imu->update();
-        yaw = imu->get_yaw();
-
-        imu_updated = true;
-    }
-
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, (gpio_ctl_pa4 != 0 ? GPIO_PIN_SET : GPIO_PIN_RESET));
 
     target_transform = {
@@ -266,12 +221,12 @@ void loop() {
         target_transform.velocity.y = Qty<MeterPerSecond>(0.20_mps);
     } else if (joy.buttons[mods::espdbt::Button::OPTIONS]) {
         target_transform.angvel =
-            tr::utilities::angles::shortest_angular_distance(0_rad, yaw) *
-            Qty<RadianPerSecond>(4.6_radps);
+            tr::utilities::angles::shortest_angular_distance(3.14159265_rad, yaw) *
+            Qty<RadianPerSecond>(1.5_radps);
     } else if (joy.buttons[mods::espdbt::Button::SHARE]) {
         target_transform.angvel =
-            tr::utilities::angles::shortest_angular_distance(0_rad, yaw) *
-            Qty<RadianPerSecond>(4.6_radps);
+            tr::utilities::angles::shortest_angular_distance(3.14159265_rad, yaw) *
+            Qty<RadianPerSecond>(1.5_radps);
     } else if (joy.buttons[mods::espdbt::Button::TRIANGLE]) {
         float current_dist = vl53_1_distance_mm;
         float error = current_dist - vl53_target_dist_mm;
@@ -289,32 +244,7 @@ void loop() {
             target_transform.velocity.x = (vel_mag * vl53_dir_x) * 1.0_mps;
             target_transform.velocity.y = (vel_mag * vl53_dir_y) * 1.0_mps;
         }
-    } else if (joy.buttons[mods::espdbt::Button::L3]) {
-        float error_x = 0.0f - live_pos_x_m;
-        float error_y = 0.0f - live_pos_y_m;
-        float dist_sq = error_x * error_x + error_y * error_y;
 
-        if (dist_sq > 0.0025f) {
-            float kp = 1.0f;
-            float max_speed = 1.0f;
-
-            float vx = error_x * kp;
-            float vy = error_y * kp;
-
-            // Clamp Speed
-            float speed = std::sqrt(vx * vx + vy * vy);
-            if (speed > max_speed) {
-                float scale = max_speed / speed;
-                vx *= scale;
-                vy *= scale;
-            }
-
-            target_transform.velocity.x = Qty<MeterPerSecond>(vx * 1.0f);
-            target_transform.velocity.y = Qty<MeterPerSecond>(vy * 1.0f);
-        } else {
-            target_transform.velocity.x = 0_mps;
-            target_transform.velocity.y = 0_mps;
-        }
     } else if (joy.buttons[mods::espdbt::Button::CROSS]) {
         float current_dist = vl53_2_distance_mm;
         float error = current_dist - vl53_target_dist_mm;
@@ -336,23 +266,6 @@ void loop() {
     ik->set_heading((yaw - Qty<Radian>(heading_offset_rad)) + 3.14159265_rad);
     ik->set_transform(target_transform);
     ik->update();
-
-    uint32_t now_tick = HAL_GetTick();
-    if (last_odom_tick != 0) {
-        Qty<Second> dt = Qty<Second>((float)(now_tick - last_odom_tick) / 1000.0f);
-
-        fk->set_heading(-(yaw - Qty<Radian>(heading_offset_rad)) + 3.14159265_rad);
-        for (const mechs::omni3::Id id : AllVariants<mechs::omni3::Id>()) {
-            fk->set_velocity(id, dji->get_now_head_angvel(OMNI3_TO_DJI[id]).unwrap() * WHEEL_RADIUS);
-        }
-        fk->update();
-
-        auto result_transform = fk->get_transform();
-        live_pos_x_m += result_transform.velocity.x.get_value() * dt.get_value();
-        live_pos_y_m += result_transform.velocity.y.get_value() * dt.get_value();
-        live_pos_yaw_deg = (yaw).get_value() * 180.0f / 3.14159265f;
-    }
-    last_odom_tick = now_tick;
 
     static uint32_t reset_combo_start = 0;
     if (joy.buttons[mods::espdbt::Button::OPTIONS] &&

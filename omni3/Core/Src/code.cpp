@@ -12,6 +12,9 @@
 #include <tr/controllers/sync_control_velocity/sync_control_velocity.hpp>
 #include <tr/prelude.hpp>
 
+#include "tr/utilities/angle/angle.hpp"
+
+
 struct HeadState {
     Qty<Radian> angle = 0_rad;
     Qty<RadianPerSecond> angvel = 0_radps;
@@ -70,7 +73,7 @@ Qty<Radian> target_angle = 0_rad;
 
 mods::Bno055 *imu;
 Qty<Radian> yaw;
-Qty<Radian> yaw_offset = 0_rad;
+// yaw_offset removed per user request
 
 mods::Dji<Fdcan> *dji;
 
@@ -338,8 +341,7 @@ void loop() {
         // Debug info
         imu_updated = true;
         debug_yaw_deg = yaw.get_value() * 180.0f / 3.14159265f;
-        debug_yaw_relative_deg =
-            (yaw.get_value() - yaw_offset.get_value()) * 180.0f / 3.14159265f;
+        debug_yaw_relative_deg = (yaw.get_value()) * 180.0f / 3.14159265f;
         debug_bno_status = imu->get_system_status();
         debug_bno_error = imu->get_system_error();
     }
@@ -403,8 +405,8 @@ void loop() {
         target_transform.angvel = angle::shortest_angular_distance(0_rad, yaw) *
             Qty<RadianPerSecond>(4.6_radps);
     } else if (joy.buttons[mods::espdbt::Button::SHARE]) {
-        // Face Front (Target the Set Origin)
-        target_transform.angvel = angle::shortest_angular_distance(yaw_offset, yaw) *
+        // Face Front (Target the Set Origin) - yaw_offset logic removed, just targeting 0
+        target_transform.angvel = angle::shortest_angular_distance(0_rad, yaw) *
             Qty<RadianPerSecond>(4.6_radps);
     } else if (joy.buttons[mods::espdbt::Button::TRIANGLE]) {
         // Sensor-based P-Control (Using Sensor 1)
@@ -437,7 +439,7 @@ void loop() {
         if (dist_sq > 0.0025f) {  // Deadband 5cm (0.05^2 = 0.0025)
             // P-Control
             float kp = 1.0f;
-            float max_speed = 0.5f;
+            float max_speed = 1.0f;
 
             float vx = error_x * kp;
             float vy = error_y * kp;
@@ -484,7 +486,7 @@ void loop() {
     // Fix Coordinate System with Mounting Offset (adjustable via heading_offset_rad)
     // Default: 45 deg = PI/4 = 0.7854 rad
     // Adjust heading_offset_rad in Live Expressions to fix drift
-    ik->set_heading(-(yaw - yaw_offset - Qty<Radian>(heading_offset_rad)) + 3.14159265_rad);
+    ik->set_heading(-(yaw - Qty<Radian>(heading_offset_rad)) + 3.14159265_rad);
     ik->set_transform(target_transform);
     ik->update();
 
@@ -493,7 +495,7 @@ void loop() {
     if (last_odom_tick != 0) {
         Qty<Second> dt = Qty<Second>((float)(now_tick - last_odom_tick) / 1000.0f);
 
-        fk->set_heading(-(yaw - yaw_offset - Qty<Radian>(heading_offset_rad)) + 3.14159265_rad);
+        fk->set_heading(-(yaw - Qty<Radian>(heading_offset_rad)) + 3.14159265_rad);
         for (const mechs::omni3::Id id : AllVariants<mechs::omni3::Id>()) {
             fk->set_velocity(id, dji->get_now_head_angvel(OMNI3_TO_DJI[id]).unwrap() * WHEEL_RADIUS);
         }
@@ -502,7 +504,7 @@ void loop() {
         auto result_transform = fk->get_transform();
         live_pos_x_m += result_transform.velocity.x.get_value() * dt.get_value();
         live_pos_y_m += result_transform.velocity.y.get_value() * dt.get_value();
-        live_pos_yaw_deg = (yaw - yaw_offset).get_value() * 180.0f / 3.14159265f;
+        live_pos_yaw_deg = (yaw).get_value() * 180.0f / 3.14159265f;
     }
     last_odom_tick = now_tick;
 

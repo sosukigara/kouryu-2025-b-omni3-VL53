@@ -1,0 +1,101 @@
+CompileFlags:
+  Add:
+    - -I../../Core/Inc/
+    - -I../../Drivers/STM32G4xx_HAL_Driver/Inc/
+    - -I../../Drivers/STM32G4xx_HAL_Driver/Inc/Legacy/
+    - -I../../Drivers/CMSIS/Device/ST/STM32G4xx/Include/
+    - -I../../Drivers/CMSIS/Include/
+    - -I../../../tr/
+    - -I../../../shared/
+    - -D STM32G474xx
+    - -D TR_HAL_ENABLED
+    - -D TR_BETTER_UNIT_DIAGNOSTIC_ENABLED
+    - -D TR_LIGHT_ENUM_VERIFICATION_ENABLED
+    - -D __GNUC__
+    - -Wall
+    - -Wextra
+---
+If:
+  PathMatch:
+    - .*\.cpp
+    - .*\.hpp
+
+Completion:
+  AllScopes: false
+
+Diagnostics:
+  Suppress:
+    - misc-definitions-in-headers
+    - deprecated-volatile
+  ClangTidy:
+    Add:
+      - modernize-*
+      - performance-*
+      - portability-*
+      - readability-*
+      - cert-*
+      - clang-analyzer-*
+      - cppcoreguidelines-*
+      - bugprone-macro-parentheses
+      - bugprone-too-small-loop-variable
+      - bugprone-redundant-branch-condition
+      - bugprone-assert-side-effect
+      - bugprone-copy-constructor-init
+      - bugprone-virtual-near-miss
+      - misc-redundant-expression
+      - misc-unused-parameters
+      - misc-static-assert
+    Remove:
+      - modernize-use-auto
+      - modernize-use-trailing-return-type
+      - readability-identifier-length
+      - performance-no-int-to-ptr
+      - readability-magic-numbers
+      - readability-else-after-return
+      - readability-inconsistent-declaration-parameter-name
+      - cppcoreguidelines-avoid-magic-numbers
+      - cppcoreguidelines-special-member-functions
+      - cppcoreguidelines-pro-type-reinterpret-cast
+      - cppcoreguidelines-owning-memory
+      - cppcoreguidelines-pro-type-union-access
+      - cppcoreguidelines-pro-bounds-array-to-pointer-decay
+      - cppcoreguidelines-avoid-do-while
+      - cppcoreguidelines-avoid-non-const-global-variables
+      - cppcoreguidelines-pro-type-cstyle-cast
+      - cert-err58-cpp
+    CheckOptions:
+      readability-identifier-naming.NamespaceCase: "lower_case"
+      readability-identifier-naming.FunctionCase: "lower_case"
+      readability-identifier-naming.FunctionIgnoredRegexp: "^[A-Z0-9][A-Z0-9_]*$" # ... or UPPER_CASE
+      readability-identifier-naming.VariableCase: "lower_case"
+      readability-identifier-naming.GlobalConstantCase: "UPPER_CASE"
+      readability-identifier-naming.GlobalConstantIgnoredRegexp: "^[a-z0-9][a-z0-9_]*$" # ... or lower_case
+      readability-identifier-naming.ConstantParameterCase: "lower_case"
+      readability-identifier-naming.ConstantParameterIgnoredRegexp: "^_[a-z0-9][a-z0-9_]*$" # ... or _lower_case_starts_with_underscore
+      readability-identifier-naming.ParameterCase: "lower_case"
+      readability-identifier-naming.ParameterIgnoredRegexp: "^_[a-z0-9][a-z0-9_]*$" # ... or _lower_case_starts_with_underscore
+      readability-identifier-naming.ClassCase: "CamelCase"
+      readability-identifier-naming.StructCase: "CamelCase"
+      readability-identifier-naming.EnumCase: "CamelCase"
+      readability-identifier-naming.EnumConstantCase: "UPPER_CASE"
+      readability-identifier-naming.EnumConstantIgnoredRegexp: "^_[A-Z0-9][A-Z0-9_]*$" # ... or _UPPER_CASE_STARTS_WITH_UNDERSCORE
+      readability-identifier-naming.TypeAliasCase: "CamelCase"
+      readability-identifier-naming.TemplateParameterCase: "CamelCase"
+      readability-identifier-naming.MacroDefinitionCase: "UPPER_CASE"
+      readability-identifier-naming.ConceptCase: "lower_case"
+      cppcoreguidelines-avoid-do-while.IgnoreMacros: true
+
+CompileFlags:
+  Add: -std=gnu++20
+---
+If:
+  PathMatch:
+    - .*\.c
+    - .*\.h
+
+Diagnostics:
+  Suppress:
+    - "*"
+
+CompileFlags:
+  Add: -ferror-limit=0

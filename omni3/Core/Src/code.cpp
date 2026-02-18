@@ -1,4 +1,4 @@
-
+// 1
 #include <main.h>
 
 #include <cmath>
@@ -26,7 +26,6 @@ bool initialized = false;
 volatile uint8_t gpio_ctl_pa2 = 0;
 volatile uint8_t gpio_ctl_pa3 = 0;
 volatile uint8_t gpio_ctl_pa4 = 0;
-
 // espdbt
 mods::Espdbt *espdbt;
 mods::espdbt::State joy;
@@ -59,7 +58,7 @@ volatile float vl53_p_gain = 0.003f;
 volatile float vl53_max_speed_mps = 0.6f;
 volatile float vl53_dir_x = -1.0f;
 volatile float vl53_dir_y = 0.0f;
-volatile float heading_offset_rad = 0.5236f;
+volatile float heading_offset_rad = 0.523599f;
 
 // omni3
 mechs::omni3::Ik *ik;
@@ -159,7 +158,7 @@ void loop() {
         imu_updated = true;
     }
 
-    static uint32_t last_vl53_read_tick = 0; //普通に割り込みに書けば10になるって言われて気付いたけど、バグったら怖いから移動させられない
+    static uint32_t last_vl53_read_tick = 0;  // 普通に割り込みに書けば10になるって言われて気付いたけど、バグったら怖いから移動させられない
     if (HAL_GetTick() - last_vl53_read_tick > 10) {
         last_vl53_read_tick = HAL_GetTick();
 
@@ -205,26 +204,33 @@ void loop() {
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, (gpio_ctl_pa4 != 0 ? GPIO_PIN_SET : GPIO_PIN_RESET));
 
     target_transform = {
-        joy.sticks[mods::espdbt::Stick::L].x * target_transform_max.velocity.x * -1.0,
-        joy.sticks[mods::espdbt::Stick::L].y * target_transform_max.velocity.y,
-        joy.sticks[mods::espdbt::Stick::R].x * target_transform_max.angvel,
+        joy.sticks[mods::espdbt::Stick::L].x * target_transform_max.velocity.x,
+        joy.sticks[mods::espdbt::Stick::L].y * target_transform_max.velocity.y * -1.0,
+        joy.sticks[mods::espdbt::Stick::R].x * target_transform_max.angvel * -1.0,
     };
     if (joy.buttons[mods::espdbt::Button::UP]) {
         target_transform.velocity.y = Qty<MeterPerSecond>(-0.20_mps);
     } else if (joy.buttons[mods::espdbt::Button::LEFT]) {
-        target_transform.velocity.x = Qty<MeterPerSecond>(0.20_mps);
-    } else if (joy.buttons[mods::espdbt::Button::RIGHT]) {
         target_transform.velocity.x = Qty<MeterPerSecond>(-0.20_mps);
+    } else if (joy.buttons[mods::espdbt::Button::RIGHT]) {
+        target_transform.velocity.x = Qty<MeterPerSecond>(0.20_mps);
     } else if (joy.buttons[mods::espdbt::Button::DOWN]) {
         target_transform.velocity.y = Qty<MeterPerSecond>(0.20_mps);
-    } else if (joy.buttons[mods::espdbt::Button::OPTIONS]) {
-        target_transform.angvel =
-            tr::utilities::angles::shortest_angular_distance(3.14159265_rad, yaw) *
-            Qty<RadianPerSecond>(1.5_radps);
-    } else if (joy.buttons[mods::espdbt::Button::SHARE]) {
-        target_transform.angvel =
-            tr::utilities::angles::shortest_angular_distance(3.14159265_rad, yaw) *
-            Qty<RadianPerSecond>(1.5_radps);
+    } else if (joy.buttons[mods::espdbt::Button::OPTIONS] ||
+               joy.buttons[mods::espdbt::Button::SHARE]) {
+        constexpr float target_rad = 0.0f;
+        constexpr float gain = 2.0f;
+        constexpr float tolerance_rad = 0.05236f;  // approx 3 deg
+
+        float error =
+            tr::utilities::angles::shortest_angular_distance(yaw, Qty<Radian>(target_rad))
+                .get_value();
+
+        if (std::abs(error) < tolerance_rad) {
+            target_transform.angvel = 0.0_radps;
+        } else {
+            target_transform.angvel = Qty<RadianPerSecond>(error * gain * 1.0_radps);
+        }
     } else if (joy.buttons[mods::espdbt::Button::TRIANGLE]) {
         float current_dist = vl53_1_distance_mm;
         float error = current_dist - vl53_target_dist_mm;
@@ -287,9 +293,7 @@ void loop() {
 
 #ifdef HAL_TIM_MODULE_ENABLED
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
-    if (!initialized) {
-        return;
-    }
+    if (!initialized) return;
 
     // 演算用
     if (htim->Instance == TIM7) {

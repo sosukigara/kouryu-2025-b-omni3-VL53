@@ -421,7 +421,7 @@ void loop() {
         } else {
             // P-Control: Velocity = Gain * Error
             // Flip sign back to positive per user report "Reversed"
-            float vel_mag = 1.0f * error * vl53_p_gain;
+            float vel_mag = -1.0f * error * vl53_p_gain;
 
             // Clamp Speed Magnitude
             if (vel_mag > vl53_max_speed_mps) vel_mag = vl53_max_speed_mps;
@@ -471,7 +471,7 @@ void loop() {
             target_transform.velocity.y = 0.0_mps;
         } else {
             // Same P-Control
-            float vel_mag = 1.0f * error * vl53_p_gain;
+            float vel_mag = -1.0f * error * vl53_p_gain;
 
             if (vel_mag > vl53_max_speed_mps) vel_mag = vl53_max_speed_mps;
             if (vel_mag < -vl53_max_speed_mps) vel_mag = -vl53_max_speed_mps;

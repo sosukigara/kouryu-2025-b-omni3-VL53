@@ -387,28 +387,28 @@ void loop() {
     */
 
     target_transform = {
-        joy.sticks[mods::espdbt::Stick::L].x * target_transform_max.velocity.x * -1.0,  // X-axis Inverted
+        joy.sticks[mods::espdbt::Stick::L].x * target_transform_max.velocity.x * -1.0,
         joy.sticks[mods::espdbt::Stick::L].y * target_transform_max.velocity.y,
-        joy.sticks[mods::espdbt::Stick::R].x * target_transform_max.angvel,
+        joy.sticks[mods::espdbt::Stick::R].x * target_transform_max.angvel * -1.0,
     };
     if (joy.buttons[mods::espdbt::Button::UP]) {
-        target_transform.velocity.y = Qty<MeterPerSecond>(-0.20_mps);  // Inverted (+ -> -)
+        target_transform.velocity.y = Qty<MeterPerSecond>(-0.20_mps);
     } else if (joy.buttons[mods::espdbt::Button::LEFT]) {
         target_transform.velocity.x = Qty<MeterPerSecond>(0.20_mps);
     } else if (joy.buttons[mods::espdbt::Button::RIGHT]) {
         target_transform.velocity.x = Qty<MeterPerSecond>(-0.20_mps);
     } else if (joy.buttons[mods::espdbt::Button::DOWN]) {
-        target_transform.velocity.y = Qty<MeterPerSecond>(0.20_mps);  // Inverted (- -> +)
+        target_transform.velocity.y = Qty<MeterPerSecond>(0.20_mps);
     } else if (joy.buttons[mods::espdbt::Button::OPTIONS]) {
         // Auto-rotate to IMU absolute 0 degrees
         target_transform.angvel =
-            tr::utilities::angles::shortest_angular_distance(0_rad, yaw) *
-            Qty<RadianPerSecond>(4.6_radps);
+            tr::utilities::angles::shortest_angular_distance(yaw, 0_rad) *
+            Qty<RadianPerSecond>(2.0_radps);
     } else if (joy.buttons[mods::espdbt::Button::SHARE]) {
         // Face Front (Target the Set Origin) - yaw_offset logic removed, just targeting 0
         target_transform.angvel =
-            tr::utilities::angles::shortest_angular_distance(0_rad, yaw) *
-            Qty<RadianPerSecond>(4.6_radps);
+            tr::utilities::angles::shortest_angular_distance(yaw, 0_rad) *
+            Qty<RadianPerSecond>(2.0_radps);
     } else if (joy.buttons[mods::espdbt::Button::TRIANGLE]) {
         // Sensor-based P-Control (Using Sensor 1)
         float current_dist = vl53_1_distance_mm;
@@ -421,7 +421,7 @@ void loop() {
         } else {
             // P-Control: Velocity = Gain * Error
             // Flip sign back to positive per user report "Reversed"
-            float vel_mag = -1.0f * error * vl53_p_gain;
+            float vel_mag = 1.0f * error * vl53_p_gain;
 
             // Clamp Speed Magnitude
             if (vel_mag > vl53_max_speed_mps) vel_mag = vl53_max_speed_mps;
@@ -471,7 +471,7 @@ void loop() {
             target_transform.velocity.y = 0.0_mps;
         } else {
             // Same P-Control
-            float vel_mag = -1.0f * error * vl53_p_gain;
+            float vel_mag = 1.0f * error * vl53_p_gain;
 
             if (vel_mag > vl53_max_speed_mps) vel_mag = vl53_max_speed_mps;
             if (vel_mag < -vl53_max_speed_mps) vel_mag = -vl53_max_speed_mps;
@@ -481,13 +481,7 @@ void loop() {
             target_transform.velocity.y = (vel_mag * -vl53_dir_y) * 1.0_mps;
         }
     }
-
-    // Fix Coordinate System with Mounting Offset (adjustable via heading_offset_rad)
-
-    // Fix Coordinate System with Mounting Offset (adjustable via heading_offset_rad)
-    // Default: 45 deg = PI/4 = 0.7854 rad
-    // Adjust heading_offset_rad in Live Expressions to fix drift
-    ik->set_heading(-(yaw - Qty<Radian>(heading_offset_rad)) + 3.14159265_rad);
+    ik->set_heading(yaw - Qty<Radian>(heading_offset_rad));
     ik->set_transform(target_transform);
     ik->update();
 
@@ -496,7 +490,7 @@ void loop() {
     if (last_odom_tick != 0) {
         Qty<Second> dt = Qty<Second>((float)(now_tick - last_odom_tick) / 1000.0f);
 
-        fk->set_heading(-(yaw - Qty<Radian>(heading_offset_rad)) + 3.14159265_rad);
+        fk->set_heading(yaw - Qty<Radian>(heading_offset_rad));
         for (const mechs::omni3::Id id : AllVariants<mechs::omni3::Id>()) {
             fk->set_velocity(id, dji->get_now_head_angvel(OMNI3_TO_DJI[id]).unwrap() * WHEEL_RADIUS);
         }

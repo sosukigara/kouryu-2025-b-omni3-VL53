@@ -509,13 +509,13 @@ void loop() {
     // Position Reset (L3: Left Stick Button) REMOVED - Moved to control loop
     // if (joy.buttons[mods::espdbt::Button::L3]) { ... }
 
-    // Remote System Reset (OPTIONS + SHARE Long Press > 1s)
+    // Remote System Reset (OPTIONS + SHARE Long Press > 100ms)
     static uint32_t reset_combo_start = 0;
     if (joy.buttons[mods::espdbt::Button::OPTIONS] &&
         joy.buttons[mods::espdbt::Button::SHARE]) {
         if (reset_combo_start == 0) {
             reset_combo_start = HAL_GetTick();
-        } else if (HAL_GetTick() - reset_combo_start > 1000) {
+        } else if (HAL_GetTick() - reset_combo_start > 100) {
             HAL_NVIC_SystemReset();
         }
     } else {

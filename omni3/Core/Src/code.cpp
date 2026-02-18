@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <param.hpp>
 #include <shared.hpp>
+#include <tr/controllers/sync_control_velocity/sync_control_velocity.hpp>
 #include <tr/prelude.hpp>
 
 struct HeadState {
@@ -130,7 +131,10 @@ Transform2d target_transform = {0_mps, 0_mps, 0_radps};
 
 controllers::ControlPosition<Qty<Radian>, Qty<Ampere>> *cp;
 
-EnumMap<mechs::omni3::Id, ctls::ControlVelocity<Qty<Radian>, Qty<Ampere>> *> cvs;
+tr::controllers::SyncControlVelocity<mechs::omni3::Id, Qty<Radian>, Qty<Ampere>> *cvs;
+
+tr::hardwares::Timer *timer6;
+tr::hardwares::Timer *timer7;
 
 // 自己位置推定
 //  順運動学インスタンス
@@ -173,16 +177,14 @@ void setup() {
     // espdbt (UART1 conflict with I2C2 PA9)
     espdbt = new mods::Espdbt(new hardwares::Uart(&huart1));
 
-    timer::start_interrupt(&htim6);
-    timer::start_interrupt(&htim7);
+    timer6 = new tr::hardwares::Timer(&htim6, true);
+    timer7 = new tr::hardwares::Timer(&htim7, true);
 
     dji = new mods::Dji<Fdcan>(new Fdcan(&hfdcan3), DJI_SAMPLING_PERIOD, DJI_DETAILS);
 
-    for (const mechs::omni3::Id id : AllVariants<mechs::omni3::Id>()) {
-        cvs[id] = new ctls::ControlVelocity<Qty<Radian>, Qty<Ampere>>(
-            TIMER_PERIOD, CV_PARAM, CV_CONFIG, true
-        );
-    }
+    cvs = new tr::controllers::SyncControlVelocity<mechs::omni3::Id, Qty<Radian>, Qty<Ampere>>(
+        TIMER_PERIOD, CV_PARAM, CV_CONFIG, true
+    );
 
     // Initialize Live PID Params
     live_kp = CV_PARAM.pid_param.kp;
@@ -266,7 +268,7 @@ void loop() {
         };
 
         for (const mechs::omni3::Id id : AllVariants<mechs::omni3::Id>()) {
-            cvs[id]->set_param(new_param);
+            cvs->set_param(id, new_param);
         }
     }
 
@@ -523,9 +525,9 @@ void loop() {
     }
 
     for (const mechs::omni3::Id id : AllVariants<mechs::omni3::Id>()) {
-        cvs[id]->set_target_velocity(ik->get_velocity(id) / WHEEL_RADIUS);
-        cvs[id]->set_now_velocity(dji->get_now_head_angvel(OMNI3_TO_DJI[id]).unwrap());
-        dji->set_target_current(OMNI3_TO_DJI[id], cvs[id]->get_output());
+        cvs->set_target_velocity(id, ik->get_velocity(id) / WHEEL_RADIUS);
+        cvs->set_now_velocity(id, dji->get_now_head_angvel(OMNI3_TO_DJI[id]).unwrap());
+        dji->set_target_current(OMNI3_TO_DJI[id], cvs->get_output(id));
     }
 
     set_terunet();
@@ -539,9 +541,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 
     // 演算用
     if (htim->Instance == TIM7) {
+        cvs->update();
         for (const mechs::omni3::Id id : AllVariants<mechs::omni3::Id>()) {
-            cvs[id]->update();
-            dji->set_target_current(OMNI3_TO_DJI[id], cvs[id]->get_output());
+            dji->set_target_current(OMNI3_TO_DJI[id], cvs->get_output(id));
         }
         return;
     }

@@ -11,11 +11,6 @@
 
 #include "tr/utilities/angles/angles.hpp"
 
-struct HeadState {
-    Qty<Radian> angle = 0_rad;
-    Qty<RadianPerSecond> angvel = 0_radps;
-};
-
 extern FDCAN_HandleTypeDef hfdcan1;
 extern FDCAN_HandleTypeDef hfdcan2;
 extern FDCAN_HandleTypeDef hfdcan3;
@@ -37,10 +32,6 @@ mods::Espdbt *espdbt;
 mods::espdbt::State joy;
 
 mods::Terunet3<mechs::omni3::Id> *tn3;
-
-Qty<Radian> now_angle = 0_rad;
-Qty<RadianPerSecond> now_angvel = 0_radps;
-Qty<Radian> target_angle = 0_rad;
 
 mods::Bno055 *imu;
 Qty<Radian> yaw;
@@ -77,13 +68,9 @@ volatile float vl53_dir_x = -1.0f;
 volatile float vl53_dir_y = 0.0f;
 volatile float heading_offset_rad = 0.5236f;
 
-EnumMap<mechs::omni3::Id, HeadState> now_states_global = {};
-
 // omni3
 mechs::omni3::Ik *ik;
 Transform2d target_transform = {0_mps, 0_mps, 0_radps};
-
-controllers::ControlPosition<Qty<Radian>, Qty<Ampere>> *cp;
 
 tr::controllers::SyncControlVelocity<mechs::omni3::Id, Qty<Radian>, Qty<Ampere>> *cvs;
 
@@ -258,8 +245,6 @@ void loop() {
         imu->rx();
         imu->update();
         yaw = imu->get_yaw();
-
-        imu_updated = true;
 
         imu_updated = true;
     }

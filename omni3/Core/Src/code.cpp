@@ -12,8 +12,7 @@
 #include <tr/controllers/sync_control_velocity/sync_control_velocity.hpp>
 #include <tr/prelude.hpp>
 
-#include "tr/utilities/angle/angle.hpp"
-
+#include "tr/utilities/angles/angles.hpp"
 
 struct HeadState {
     Qty<Radian> angle = 0_rad;
@@ -63,7 +62,7 @@ volatile uint8_t monitor_pa3 = 0;
 mods::Espdbt *espdbt;
 mods::espdbt::State joy;
 
-mods::Terunet3 *tn3;
+mods::Terunet3<mechs::omni3::Id> *tn3;
 
 Qty<Radian> now_angle = 0_rad;
 Qty<RadianPerSecond> now_angvel = 0_radps;
@@ -75,7 +74,7 @@ mods::Bno055 *imu;
 Qty<Radian> yaw;
 // yaw_offset removed per user request
 
-mods::Dji<Fdcan> *dji;
+mods::Dji *dji;
 
 // --- 監視すべき変数はこれだけです ---
 volatile uint32_t heartbeat = 0;  // 猛スピードで増えればプログラム正常
@@ -175,7 +174,7 @@ void setup() {
     vl53_1 = new mods::Vl53l0x(&hi2c2);
     vl53_2 = new mods::Vl53l0x(&hi2c2);
 
-    tn3 = new mods::Terunet3(new Fdcan(&hfdcan1));
+    tn3 = new mods::Terunet3<mechs::omni3::Id>(new Fdcan(&hfdcan1));
 
     // espdbt (UART1 conflict with I2C2 PA9)
     espdbt = new mods::Espdbt(new hardwares::Uart(&huart1));
@@ -183,7 +182,7 @@ void setup() {
     timer6 = new tr::hardwares::Timer(&htim6, true);
     timer7 = new tr::hardwares::Timer(&htim7, true);
 
-    dji = new mods::Dji<Fdcan>(new Fdcan(&hfdcan3), DJI_SAMPLING_PERIOD, DJI_DETAILS);
+    dji = new mods::Dji(new Fdcan(&hfdcan3), DJI_SAMPLING_PERIOD, DJI_DETAILS);
 
     cvs = new tr::controllers::SyncControlVelocity<mechs::omni3::Id, Qty<Radian>, Qty<Ampere>>(
         TIMER_PERIOD, CV_PARAM, CV_CONFIG, true
@@ -402,11 +401,13 @@ void loop() {
         target_transform.velocity.y = Qty<MeterPerSecond>(0.20_mps);  // Inverted (- -> +)
     } else if (joy.buttons[mods::espdbt::Button::OPTIONS]) {
         // Auto-rotate to IMU absolute 0 degrees
-        target_transform.angvel = angle::shortest_angular_distance(0_rad, yaw) *
+        target_transform.angvel =
+            tr::utilities::angles::shortest_angular_distance(0_rad, yaw) *
             Qty<RadianPerSecond>(4.6_radps);
     } else if (joy.buttons[mods::espdbt::Button::SHARE]) {
         // Face Front (Target the Set Origin) - yaw_offset logic removed, just targeting 0
-        target_transform.angvel = angle::shortest_angular_distance(0_rad, yaw) *
+        target_transform.angvel =
+            tr::utilities::angles::shortest_angular_distance(0_rad, yaw) *
             Qty<RadianPerSecond>(4.6_radps);
     } else if (joy.buttons[mods::espdbt::Button::TRIANGLE]) {
         // Sensor-based P-Control (Using Sensor 1)

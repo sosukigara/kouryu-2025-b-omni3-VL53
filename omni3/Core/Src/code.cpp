@@ -152,9 +152,7 @@ void loop() {
     espdbt->update();
     joy = espdbt->get();
 
-    static uint32_t last_imu_tick = 0;
-    if (imu != nullptr && (HAL_GetTick() - last_imu_tick > 10)) {
-        last_imu_tick = HAL_GetTick();
+    if (imu != nullptr) {
         imu->rx();
         imu->update();
         yaw = imu->get_yaw();
@@ -237,7 +235,6 @@ void loop() {
         } else {
             float vel_mag = -1.0f * error * vl53_p_gain;
 
-            // Clamp Speed Magnitude
             if (vel_mag > vl53_max_speed_mps) vel_mag = vl53_max_speed_mps;
             if (vel_mag < -vl53_max_speed_mps) vel_mag = -vl53_max_speed_mps;
 

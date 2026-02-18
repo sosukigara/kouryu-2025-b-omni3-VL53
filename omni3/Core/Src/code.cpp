@@ -38,13 +38,7 @@ extern TIM_HandleTypeDef htim6;
 extern TIM_HandleTypeDef htim7;
 extern I2C_HandleTypeDef hi2c2;
 extern I2C_HandleTypeDef hi2c3;
-// extern FDCAN_HandleTypeDef hfdcan1;
-extern FDCAN_HandleTypeDef hfdcan2;
-extern FDCAN_HandleTypeDef hfdcan3;
-extern TIM_HandleTypeDef htim6;
-extern TIM_HandleTypeDef htim7;
-extern I2C_HandleTypeDef hi2c2;
-extern I2C_HandleTypeDef hi2c3;
+// Duplicate externs removed
 extern UART_HandleTypeDef huart1;
 
 bool initialized = false;
@@ -55,8 +49,7 @@ volatile uint8_t gpio_ctl_pa3 = 0;
 volatile uint8_t gpio_ctl_pa4 = 0;  // Found in main.c instead of PA2
 // volatile uint8_t gpio_ctl_pc4 = 0; // Configured as USART1
 // volatile uint8_t gpio_ctl_pc5 = 0; // Configured as USART1
-volatile uint8_t monitor_pa2 = 0;
-volatile uint8_t monitor_pa3 = 0;
+// GPIO Debug Control - Removed monitor variables
 
 // espdbt
 mods::Espdbt *espdbt;
@@ -101,10 +94,7 @@ volatile uint32_t vl53_1_last_update = 0;  // Timeout detection
 volatile uint32_t vl53_2_last_update = 0;  // Timeout detection
 
 // IMU Debug
-volatile float debug_yaw_deg = 0.0f;
-volatile float debug_yaw_relative_deg = 0.0f;  // Relative yaw (after offset)
-volatile uint8_t debug_bno_status = 255;
-volatile uint8_t debug_bno_error = 255;
+// IMU Debug - Removed status variables
 volatile bool imu_updated = false;
 
 // Tuning Params (Live Expressions)
@@ -339,76 +329,39 @@ void loop() {
 
         // Debug info
         imu_updated = true;
-        debug_yaw_deg = yaw.get_value() * 180.0f / 3.14159265f;
-        debug_yaw_relative_deg = (yaw.get_value()) * 180.0f / 3.14159265f;
-        debug_bno_status = imu->get_system_status();
-        debug_bno_error = imu->get_system_error();
+        // Debug info
+        imu_updated = true;
     }
 
     // GPIO Control
     // Monitor (実際にピンがHighになっているか確認)
-    extern volatile uint8_t monitor_pa2;
-    extern volatile uint8_t monitor_pa3;
-    monitor_pa2 = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_2);
-    monitor_pa3 = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_3);
+    // GPIO Debug Monitor removed
 
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, (gpio_ctl_pa4 != 0 ? GPIO_PIN_SET : GPIO_PIN_RESET));
 
-    /*
-    // omni3
-    ik.set_heading(yaw);  // imu
-    ik.set_transform(target_transform);
-    ik.update();
-
-    now_states_global = read_head_states_local(dji);
-
-    uint32_t now_tick = HAL_GetTick();  // ミリ秒単位
-    if (last_odom_tick == 0) {
-        last_odom_tick = now_tick;  // 初回はスキップ
-    }
-
-    double dt_sec = (double)(now_tick - last_odom_tick) / 1000.0;
-    Qty<Second> dt = Qty<Second>(dt_sec);
-
-    last_odom_tick = now_tick;
-
-    fk.set_heading(yaw);  // ロボットの現在の向き
-
-    for (const mechs::omni3::Id id : AllVariants<mechs::omni3::Id>()) {
-        Qty<MeterPerSecond> wheel_vel = now_states_global[id].angvel *
-    WHEEL_RADIUS; fk.set_velocity(id, wheel_vel);
-    }
-
-    fk.update();
-    auto result_transform = fk.get_transform();
-
-    current_pos.x += result_transform.velocity.x * dt;
-    current_pos.y += result_transform.velocity.y * dt;
-    */
-
     target_transform = {
-        joy.sticks[mods::espdbt::Stick::L].x * target_transform_max.velocity.x * -1.0,
+        joy.sticks[mods::espdbt::Stick::L].x * target_transform_max.velocity.x * -1.0,  // X-axis Inverted
         joy.sticks[mods::espdbt::Stick::L].y * target_transform_max.velocity.y,
-        joy.sticks[mods::espdbt::Stick::R].x * target_transform_max.angvel * -1.0,
+        joy.sticks[mods::espdbt::Stick::R].x * target_transform_max.angvel,
     };
     if (joy.buttons[mods::espdbt::Button::UP]) {
-        target_transform.velocity.y = Qty<MeterPerSecond>(-0.20_mps);
+        target_transform.velocity.y = Qty<MeterPerSecond>(-0.20_mps);  // Inverted (+ -> -)
     } else if (joy.buttons[mods::espdbt::Button::LEFT]) {
         target_transform.velocity.x = Qty<MeterPerSecond>(0.20_mps);
     } else if (joy.buttons[mods::espdbt::Button::RIGHT]) {
         target_transform.velocity.x = Qty<MeterPerSecond>(-0.20_mps);
     } else if (joy.buttons[mods::espdbt::Button::DOWN]) {
-        target_transform.velocity.y = Qty<MeterPerSecond>(0.20_mps);
+        target_transform.velocity.y = Qty<MeterPerSecond>(0.20_mps);  // Inverted (- -> +)
     } else if (joy.buttons[mods::espdbt::Button::OPTIONS]) {
         // Auto-rotate to IMU absolute 0 degrees
         target_transform.angvel =
-            tr::utilities::angles::shortest_angular_distance(yaw, 0_rad) *
-            Qty<RadianPerSecond>(2.0_radps);
+            tr::utilities::angles::shortest_angular_distance(0_rad, yaw) *
+            Qty<RadianPerSecond>(4.6_radps);
     } else if (joy.buttons[mods::espdbt::Button::SHARE]) {
         // Face Front (Target the Set Origin) - yaw_offset logic removed, just targeting 0
         target_transform.angvel =
-            tr::utilities::angles::shortest_angular_distance(yaw, 0_rad) *
-            Qty<RadianPerSecond>(2.0_radps);
+            tr::utilities::angles::shortest_angular_distance(0_rad, yaw) *
+            Qty<RadianPerSecond>(4.6_radps);
     } else if (joy.buttons[mods::espdbt::Button::TRIANGLE]) {
         // Sensor-based P-Control (Using Sensor 1)
         float current_dist = vl53_1_distance_mm;
@@ -421,7 +374,7 @@ void loop() {
         } else {
             // P-Control: Velocity = Gain * Error
             // Flip sign back to positive per user report "Reversed"
-            float vel_mag = 1.0f * error * vl53_p_gain;
+            float vel_mag = -1.0f * error * vl53_p_gain;
 
             // Clamp Speed Magnitude
             if (vel_mag > vl53_max_speed_mps) vel_mag = vl53_max_speed_mps;
@@ -471,7 +424,7 @@ void loop() {
             target_transform.velocity.y = 0.0_mps;
         } else {
             // Same P-Control
-            float vel_mag = 1.0f * error * vl53_p_gain;
+            float vel_mag = -1.0f * error * vl53_p_gain;
 
             if (vel_mag > vl53_max_speed_mps) vel_mag = vl53_max_speed_mps;
             if (vel_mag < -vl53_max_speed_mps) vel_mag = -vl53_max_speed_mps;
@@ -481,7 +434,13 @@ void loop() {
             target_transform.velocity.y = (vel_mag * -vl53_dir_y) * 1.0_mps;
         }
     }
-    ik->set_heading(yaw - Qty<Radian>(heading_offset_rad));
+
+    // Fix Coordinate System with Mounting Offset (adjustable via heading_offset_rad)
+
+    // Fix Coordinate System with Mounting Offset (adjustable via heading_offset_rad)
+    // Default: 45 deg = PI/4 = 0.7854 rad
+    // Adjust heading_offset_rad in Live Expressions to fix drift
+    ik->set_heading((yaw - Qty<Radian>(heading_offset_rad)) + 3.14159265_rad);
     ik->set_transform(target_transform);
     ik->update();
 
@@ -490,7 +449,7 @@ void loop() {
     if (last_odom_tick != 0) {
         Qty<Second> dt = Qty<Second>((float)(now_tick - last_odom_tick) / 1000.0f);
 
-        fk->set_heading(yaw - Qty<Radian>(heading_offset_rad));
+        fk->set_heading(-(yaw - Qty<Radian>(heading_offset_rad)) + 3.14159265_rad);
         for (const mechs::omni3::Id id : AllVariants<mechs::omni3::Id>()) {
             fk->set_velocity(id, dji->get_now_head_angvel(OMNI3_TO_DJI[id]).unwrap() * WHEEL_RADIUS);
         }

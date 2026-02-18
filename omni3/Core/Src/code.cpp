@@ -278,36 +278,34 @@ void loop() {
     espdbt->update();
     joy = espdbt->get();
 
-    // Sensor 1 Read Logic (Using cached value from Rate Limiting block)
-    {
-        // Assuming vl53_1_dist is obtained from vl53_1->read_distance_continuous() elsewhere
-        // For now, let's simulate it if not explicitly defined in the provided context
-        // If vl53_1_dist is not defined, this will cause a compilation error.
-        // The instruction implies vl53_1_dist is available.
-        auto vl53_1_dist = vl53_1->read_distance_continuous();  // Placeholder if not defined globally
-        float raw_mm_1 = vl53_1_dist.get_value() * 1000.0f;
-        if (raw_mm_1 < 20.0f || raw_mm_1 > 3000.0f) {
-            vl53_1_distance_mm = 3000.0f;
-        } else {
-            vl53_1_distance_mm = raw_mm_1;
-        }
-        vl53_1_last_update = HAL_GetTick();
-    }
+    // Sensor 1 & 2 Read Logic with Rate Limiting (10ms)
+    static uint32_t last_vl53_read_tick = 0;
+    if (HAL_GetTick() - last_vl53_read_tick > 10) {
+        last_vl53_read_tick = HAL_GetTick();
 
-    // Sensor 2 Read Logic
-    {
-        // Assuming vl53_2_dist is obtained from vl53_2->read_distance_continuous() elsewhere
-        // For now, let's simulate it if not explicitly defined in the provided context
-        // If vl53_2_dist is not defined, this will cause a compilation error.
-        // The instruction implies vl53_2_dist is available.
-        auto vl53_2_dist = vl53_2->read_distance_continuous();  // Placeholder if not defined globally
-        float raw_mm_2 = vl53_2_dist.get_value() * 1000.0f;
-        if (raw_mm_2 < 20.0f || raw_mm_2 > 3000.0f) {
-            vl53_2_distance_mm = 3000.0f;
-        } else {
-            vl53_2_distance_mm = raw_mm_2;
+        // Sensor 1 Read Logic
+        {
+            auto vl53_1_dist = vl53_1->read_distance_continuous();
+            float raw_mm_1 = vl53_1_dist.get_value() * 1000.0f;
+            if (raw_mm_1 < 20.0f || raw_mm_1 > 3000.0f) {
+                vl53_1_distance_mm = 3000.0f;
+            } else {
+                vl53_1_distance_mm = raw_mm_1;
+            }
+            vl53_1_last_update = HAL_GetTick();
         }
-        vl53_2_last_update = HAL_GetTick();
+
+        // Sensor 2 Read Logic
+        {
+            auto vl53_2_dist = vl53_2->read_distance_continuous();
+            float raw_mm_2 = vl53_2_dist.get_value() * 1000.0f;
+            if (raw_mm_2 < 20.0f || raw_mm_2 > 3000.0f) {
+                vl53_2_distance_mm = 3000.0f;
+            } else {
+                vl53_2_distance_mm = raw_mm_2;
+            }
+            vl53_2_last_update = HAL_GetTick();
+        }
     }
 
     // VL53 Connection Management (Retry Logic)

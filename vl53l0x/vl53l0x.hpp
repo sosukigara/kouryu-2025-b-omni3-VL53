@@ -31,8 +31,15 @@ public:
 
     int get_last_hal_status() { return static_cast<int>(last_hal_status); }
 
-    bool is_connected() {
-        last_hal_status = HAL_I2C_IsDeviceReady(hi2c, address << 1, 3, 2);
+    uint32_t get_i2c_error() { return hi2c ? hi2c->ErrorCode : 0; }
+    uint32_t get_i2c_isr() {
+        return (hi2c && hi2c->Instance) ? hi2c->Instance->ISR : 0;
+    }
+
+    bool is_connected() { return is_at_address(address); }
+
+    bool is_at_address(uint8_t addr) {
+        last_hal_status = HAL_I2C_IsDeviceReady(hi2c, addr << 1, 3, 2);
         return last_hal_status == HAL_OK;
     }
 

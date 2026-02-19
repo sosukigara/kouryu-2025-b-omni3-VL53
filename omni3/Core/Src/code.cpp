@@ -50,6 +50,21 @@ volatile bool vl53_1_ok = false;
 volatile bool vl53_2_ok = false;
 volatile float vl53_1_distance_mm = -1.0f;
 volatile float vl53_2_distance_mm = -1.0f;
+volatile float vl53_1_raw_m = 0.0f;
+volatile float vl53_2_raw_m = 0.0f;
+volatile int vl53_1_last_hal_status = 0;
+volatile int vl53_2_last_hal_status = 0;
+volatile uint32_t vl53_1_i2c_error = 0;
+volatile uint32_t vl53_2_i2c_error = 0;
+volatile uint32_t vl53_1_i2c_isr = 0;
+volatile uint32_t vl53_2_i2c_isr = 0;
+volatile bool vl53_1_found_at_default = false;
+volatile bool vl53_2_found_at_default = false;
+volatile float vl53_1_emergency_mm = 0.0f;
+volatile float vl53_2_emergency_mm = 0.0f;
+volatile bool vl53_1_emergency_init_done = false;
+volatile bool vl53_2_emergency_init_done = false;
+volatile bool vl53_error_reset = false;
 volatile uint32_t vl53_1_last_update = 0;
 volatile uint32_t vl53_2_last_update = 0;
 volatile uint32_t vl53_retry_count = 0;
@@ -135,6 +150,12 @@ void try_vl53_init() {
         vl53_1_ok = true;
     } else {
         vl53_1_ok = false;
+        // Capture init failure details
+        uint32_t err = vl53_1->get_i2c_error();
+        if (err != 0) vl53_1_i2c_error = err;
+        uint32_t isr = vl53_1->get_i2c_isr();
+        if (isr != 0 && isr != 1) vl53_1_i2c_isr = isr;
+        vl53_1_last_hal_status = vl53_1->get_last_hal_status();
     }
 
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_2, GPIO_PIN_SET);
@@ -147,6 +168,12 @@ void try_vl53_init() {
         vl53_2_ok = true;
     } else {
         vl53_2_ok = false;
+        // Capture init failure details
+        uint32_t err = vl53_2->get_i2c_error();
+        if (err != 0) vl53_2_i2c_error = err;
+        uint32_t isr = vl53_2->get_i2c_isr();
+        if (isr != 0 && isr != 1) vl53_2_i2c_isr = isr;
+        vl53_2_last_hal_status = vl53_2->get_last_hal_status();
     }
 
     setup_step = 100;
@@ -173,15 +200,40 @@ void loop() {
     if (HAL_GetTick() - last_vl53_read_tick > 10) {
         last_vl53_read_tick = HAL_GetTick();
 
+        if (vl53_error_reset) {
+            vl53_1_i2c_error = 0;
+            vl53_2_i2c_error = 0;
+            vl53_1_i2c_isr = 0;
+            vl53_2_i2c_isr = 0;
+            vl53_1_found_at_default = false;
+            vl53_2_found_at_default = false;
+            vl53_1_emergency_mm = 0.0f;
+            vl53_2_emergency_mm = 0.0f;
+            vl53_1_emergency_init_done = false;
+            vl53_2_emergency_init_done = false;
+            vl53_error_reset = false;
+        }
+
         if (vl53_1_ok) {
             auto vl53_1_dist = vl53_1->read_distance_continuous();
-            float raw_mm_1 = vl53_1_dist.get_value() * 1000.0f;
+            vl53_1_raw_m = vl53_1_dist.get_value();
+            vl53_1_last_hal_status = vl53_1->get_last_hal_status();
+
+            float raw_mm_1 = vl53_1_raw_m * 1000.0f;
+            uint32_t isr1 = vl53_1->get_i2c_isr();
+            if (isr1 != 0 && isr1 != 1) vl53_1_i2c_isr = isr1;
+
+            uint32_t err1 = vl53_1->get_i2c_error();
+            if (err1 != 0) vl53_1_i2c_error = err1;
+            if (err1 == 4) {
+                if (vl53_1->is_at_address(0x29)) vl53_1_found_at_default = true;
+            }
+
             if (raw_mm_1 < -1.5f) {
                 vl53_1_ok = false;
                 vl53_1_distance_mm = 3000.0f;
             } else if (raw_mm_1 < 20.0f || raw_mm_1 > 3000.0f) {
-                vl53_1_distance_mm = 
-                3000.0f;
+                vl53_1_distance_mm = 3000.0f;
 
                 vl53_1_last_update = HAL_GetTick();
             } else {
@@ -192,7 +244,19 @@ void loop() {
 
         if (vl53_2_ok) {
             auto vl53_2_dist = vl53_2->read_distance_continuous();
-            float raw_mm_2 = vl53_2_dist.get_value() * 1000.0f;
+            vl53_2_raw_m = vl53_2_dist.get_value();
+            vl53_2_last_hal_status = vl53_2->get_last_hal_status();
+
+            float raw_mm_2 = vl53_2_raw_m * 1000.0f;
+            uint32_t isr2 = vl53_2->get_i2c_isr();
+            if (isr2 != 0 && isr2 != 1) vl53_2_i2c_isr = isr2;
+
+            uint32_t err2 = vl53_2->get_i2c_error();
+            if (err2 != 0) vl53_2_i2c_error = err2;
+            if (err2 == 4) {
+                if (vl53_2->is_at_address(0x29)) vl53_2_found_at_default = true;
+            }
+
             if (raw_mm_2 < -1.5f) {
                 vl53_2_ok = false;
                 vl53_2_distance_mm = 3000.0f;
@@ -214,15 +278,8 @@ void loop() {
             last_vl53_retry = HAL_GetTick();
 
             HAL_TIM_Base_Stop_IT(&htim7);
-
-            cvs->reset();
-
-            for (const mechs::omni3::Id id : AllVariants<mechs::omni3::Id>()) {
-                dji->set_target_current(OMNI3_TO_DJI[id], 0_A);
-            }
-            dji->tx();
-            HAL_Delay(5);
-
+            tn3->get({0, 0, 0});
+            tn3->send();
             try_vl53_init();
 
             joy = mods::espdbt::State{};
@@ -236,8 +293,9 @@ void loop() {
             return;
         }
     }
+    */
 
-    if (vl53_1_ok && (HAL_GetTick() - vl53_1_last_update > 3000)) {
+        if (vl53_1_ok && (HAL_GetTick() - vl53_1_last_update > 3000)) {
         vl53_1_ok = false;
     }
     if (vl53_2_ok && (HAL_GetTick() - vl53_2_last_update > 3000)) {

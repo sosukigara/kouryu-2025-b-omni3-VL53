@@ -41,6 +41,7 @@ mods::Dji* dji;
 volatile uint32_t heartbeat = 0;
 volatile int setup_step = 0;
 volatile uint8_t found_addr = 0;
+volatile uint32_t input_ignore_until = 0;
 
 mods::Vl53l0x* vl53_1;
 mods::Vl53l0x* vl53_2;
@@ -157,6 +158,11 @@ void loop() {
     espdbt->update();
     joy = espdbt->get();
 
+    // リトライ直後の誤動作防止（入力無視期間）
+    if (HAL_GetTick() < input_ignore_until) {
+        joy = mods::espdbt::State{};
+    }
+
     if (imu != nullptr) {
         imu->rx();
         imu->update();
@@ -176,6 +182,8 @@ void loop() {
                 vl53_1_distance_mm = 3000.0f;
             } else if (raw_mm_1 < 20.0f || raw_mm_1 > 3000.0f) {
                 vl53_1_distance_mm = 3000.0f;
+                // 有効な測定結果（範囲外）なのでタイムアウトさせない
+                vl53_1_last_update = HAL_GetTick();
             } else {
                 vl53_1_distance_mm = raw_mm_1;
                 vl53_1_last_update = HAL_GetTick();
@@ -190,6 +198,8 @@ void loop() {
                 vl53_2_distance_mm = 3000.0f;
             } else if (raw_mm_2 < 20.0f || raw_mm_2 > 3000.0f) {
                 vl53_2_distance_mm = 3000.0f;
+                // 有効な測定結果（範囲外）なのでタイムアウトさせない
+                vl53_2_last_update = HAL_GetTick();
             } else {
                 vl53_2_distance_mm = raw_mm_2;
                 vl53_2_last_update = HAL_GetTick();
@@ -215,6 +225,14 @@ void loop() {
 
             // 復帰後の入力ジャンプ防止
             joy = mods::espdbt::State{};
+            input_ignore_until = HAL_GetTick() + 500;
+
+            // 制御目標もリセット
+            target_transform = {0_mps, 0_mps, 0_radps};
+
+            // このサイクルでの制御計算をスキップして即座にループを抜ける
+            // これにより、ブロッキング明けの不安定な状態でモーターが動くのを防ぐ
+            return;
         }
     }
 

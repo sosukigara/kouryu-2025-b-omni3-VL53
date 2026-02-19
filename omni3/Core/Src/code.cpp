@@ -1,4 +1,4 @@
-// 1
+
 #include <main.h>
 
 #include <cmath>
@@ -42,6 +42,7 @@ volatile uint32_t heartbeat = 0;
 volatile int setup_step = 0;
 volatile uint8_t found_addr = 0;
 volatile uint32_t input_ignore_until = 0;
+volatile uint32_t motor_output_inhibit_until = 0;
 
 mods::Vl53l0x* vl53_1;
 mods::Vl53l0x* vl53_2;
@@ -117,7 +118,6 @@ void try_vl53_init() {
     vl53_retry_count = vl53_retry_count + 1;
     setup_step = 2;
 
-    // I2C バスリセット（ロック解除）
     HAL_I2C_DeInit(&hi2c2);
     HAL_I2C_Init(&hi2c2);
 
@@ -158,7 +158,6 @@ void loop() {
     espdbt->update();
     joy = espdbt->get();
 
-    // リトライ直後の誤動作防止（入力無視期間）
     if (HAL_GetTick() < input_ignore_until) {
         joy = mods::espdbt::State{};
     }
@@ -181,8 +180,9 @@ void loop() {
                 vl53_1_ok = false;
                 vl53_1_distance_mm = 3000.0f;
             } else if (raw_mm_1 < 20.0f || raw_mm_1 > 3000.0f) {
-                vl53_1_distance_mm = 3000.0f;
-                // 有効な測定結果（範囲外）なのでタイムアウトさせない
+                vl53_1_distance_mm = 
+                3000.0f;
+
                 vl53_1_last_update = HAL_GetTick();
             } else {
                 vl53_1_distance_mm = raw_mm_1;
@@ -198,7 +198,7 @@ void loop() {
                 vl53_2_distance_mm = 3000.0f;
             } else if (raw_mm_2 < 20.0f || raw_mm_2 > 3000.0f) {
                 vl53_2_distance_mm = 3000.0f;
-                // 有効な測定結果（範囲外）なのでタイムアウトさせない
+
                 vl53_2_last_update = HAL_GetTick();
             } else {
                 vl53_2_distance_mm = raw_mm_2;
@@ -213,25 +213,26 @@ void loop() {
         if (HAL_GetTick() - last_vl53_retry > 5000) {
             last_vl53_retry = HAL_GetTick();
 
-            // モーター安全停止（リトライ中のブロッキングで暴走防止）
-            // IK/CVSを経由せず、直接CAN指令値をゼロにする
+            HAL_TIM_Base_Stop_IT(&htim7);
+
+            cvs->reset();
+
             for (const mechs::omni3::Id id : AllVariants<mechs::omni3::Id>()) {
                 dji->set_target_current(OMNI3_TO_DJI[id], 0_A);
             }
-            dji->tx();     // 即時送信
-            HAL_Delay(1);  // 送信待ち
+            dji->tx();
+            HAL_Delay(5);
 
             try_vl53_init();
 
-            // 復帰後の入力ジャンプ防止
             joy = mods::espdbt::State{};
             input_ignore_until = HAL_GetTick() + 500;
+            motor_output_inhibit_until = HAL_GetTick() + 500;
 
-            // 制御目標もリセット
             target_transform = {0_mps, 0_mps, 0_radps};
 
-            // このサイクルでの制御計算をスキップして即座にループを抜ける
-            // これにより、ブロッキング明けの不安定な状態でモーターが動くのを防ぐ
+            HAL_TIM_Base_Start_IT(&htim7);
+
             return;
         }
     }
@@ -262,7 +263,7 @@ void loop() {
                joy.buttons[mods::espdbt::Button::SHARE]) {
         constexpr float target_rad = 0.0f;
         constexpr float gain = 2.0f;
-        constexpr float tolerance_rad = 0.05236f;  // approx 3 deg
+        constexpr float tolerance_rad = 0.05236f;
 
         float error =
             tr::utilities::angles::shortest_angular_distance(yaw, Qty<Radian>(target_rad))
@@ -340,7 +341,7 @@ void loop() {
         cvs->set_now_velocity(id, dji->get_now_head_angvel(OMNI3_TO_DJI[id]).unwrap());
         dji->set_target_current(OMNI3_TO_DJI[id], cvs->get_output(id));
     }
-    // terunetで通信
+
     tn3->set({
         {shared::TerunetId::PET, joy.buttons[mods::espdbt::Button::L1]},
         {shared::TerunetId::BELT, joy.buttons[mods::espdbt::Button::R1]},
@@ -352,17 +353,21 @@ void loop() {
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim) {
     if (!initialized) return;
 
-    // 演算用
     if (htim->Instance == TIM7) {
         cvs->update();
-        for (const mechs::omni3::Id id : AllVariants<mechs::omni3::Id>()) {
-            dji->set_target_current(OMNI3_TO_DJI[id], cvs->get_output(id));
+        if (HAL_GetTick() < motor_output_inhibit_until) {
+            for (const mechs::omni3::Id id : AllVariants<mechs::omni3::Id>()) {
+                dji->set_target_current(OMNI3_TO_DJI[id], 0_A);
+            }
+        } else {
+            for (const mechs::omni3::Id id : AllVariants<mechs::omni3::Id>()) {
+                dji->set_target_current(OMNI3_TO_DJI[id], cvs->get_output(id));
+            }
         }
 
         return;
     }
 
-    // 通信用
     if (htim->Instance == TIM6) {
         dji->tx();
         tn3->tx();

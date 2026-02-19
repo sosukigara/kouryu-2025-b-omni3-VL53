@@ -455,6 +455,9 @@ public:
             uint16_t mm = read_reg16_addr(0x0096);
             // Clear Interrupt
             write_reg16_addr(0x0086, 0x01);
+            // I2Cエラーチェック（断線検知）
+            if (last_hal_status != HAL_OK) return -2.0_m;
+            if (mm == 0 || mm == 65535) return -1.0_m;
             return Qty<Meter>(mm / 1000.0F);
         } else {
             // L0X
@@ -468,10 +471,15 @@ public:
 
             // 8190: Range Overflow (No target)
             // 0: Range Underflow or invalid
-            // 20: Minimum reliable range?
-            if (range_mm == 0 || range_mm >= 8190) {
-                return -1.0_m;  // Treat as invalid/timeout to trigger re-init if
-                                // persistent? Or just ignore in higher level logic.
+            // 65535: Disconnect (Bus high)
+            if (range_mm == 65535) {
+                return -1.0_m;
+            }
+            if (range_mm >= 8190) {
+                return 8.19_m;
+            }
+            if (range_mm == 0) {
+                return -1.0_m;
             }
 
             return Qty<Meter>(static_cast<float>(range_mm) * 0.001F);
@@ -519,7 +527,9 @@ public:
         uint16_t range_mm = read_reg16(0x1E);
         write_reg(SYSTEM_INTERRUPT_CLEAR, 0x01);
 
-        if (range_mm == 255 || range_mm > 8000) return -1.0_m;
+        if (range_mm == 65535) return -1.0_m;
+        if (range_mm > 8000) return 8.19_m;
+        if (range_mm == 255) return -1.0_m;
         return Qty<Meter>(static_cast<float>(range_mm) * 0.001F);
     }
 

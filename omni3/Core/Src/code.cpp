@@ -9,6 +9,7 @@
 #include <tr/controllers/sync_control_velocity/sync_control_velocity.hpp>
 #include <tr/prelude.hpp>
 
+#include "../../../vl53l0x/vl53l0x.hpp"
 #include "tr/utilities/angles/angles.hpp"
 
 extern FDCAN_HandleTypeDef hfdcan1;
@@ -357,12 +358,7 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef* hfdcan, uint32_t rx_fifo0_it
     if (!initialized) {
         return;
     }
-
     if (rx_fifo0_its == FDCAN_IT_RX_FIFO0_NEW_MESSAGE) {
-        if (hfdcan->Instance == FDCAN1) {
-            tn3->rx();
-            return;
-        }
     }
 }
 
@@ -374,6 +370,11 @@ void HAL_FDCAN_RxFifo1Callback(FDCAN_HandleTypeDef* hfdcan, uint32_t rx_fifo1_it
     if (rx_fifo1_its == FDCAN_IT_RX_FIFO1_NEW_MESSAGE) {
         if (hfdcan->Instance == FDCAN3) {
             dji->rx();
+            return;
+        }
+
+        if (hfdcan->Instance == FDCAN1) {
+            tn3->rx();
             return;
         }
     }

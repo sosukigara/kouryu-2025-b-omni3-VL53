@@ -204,14 +204,17 @@ void loop() {
             last_vl53_retry = HAL_GetTick();
 
             // モーター安全停止（リトライ中のブロッキングで暴走防止）
-            target_transform = {0_mps, 0_mps, 0_radps};
-            ik->set_transform(target_transform);
-            ik->update();
+            // IK/CVSを経由せず、直接CAN指令値をゼロにする
             for (const mechs::omni3::Id id : AllVariants<mechs::omni3::Id>()) {
-                cvs->set_target_velocity(id, 0.0_radps);
+                dji->set_target_current(OMNI3_TO_DJI[id], 0_A);
             }
+            dji->tx();     // 即時送信
+            HAL_Delay(1);  // 送信待ち
 
             try_vl53_init();
+
+            // 復帰後の入力ジャンプ防止
+            joy = mods::espdbt::Joy();
         }
     }
 

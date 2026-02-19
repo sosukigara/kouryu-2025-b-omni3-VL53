@@ -5,5 +5,10 @@
 #include "../vl53l0x/vl53l0x.hpp"
 
 namespace shared {
-enum class TerunetId : uint8_t {};
+enum class TerunetId : uint8_t {
+    PET,
+    BELT,
+    ARM,
+    STATE    
+};
 }

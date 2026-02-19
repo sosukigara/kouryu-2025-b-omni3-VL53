@@ -21,28 +21,28 @@ extern I2C_HandleTypeDef hi2c3;
 
 extern UART_HandleTypeDef huart1;
 
+mods::Terunet3<shared::TerunetId>* tn3;
+
 bool initialized = false;
 
 volatile uint8_t gpio_ctl_pa2 = 0;
 volatile uint8_t gpio_ctl_pa3 = 0;
 volatile uint8_t gpio_ctl_pa4 = 0;
 // espdbt
-mods::Espdbt *espdbt;
+mods::Espdbt* espdbt;
 mods::espdbt::State joy;
 
-mods::Terunet3<mechs::omni3::Id> *tn3;
-
-mods::Bno055 *imu;
+mods::Bno055* imu;
 Qty<Radian> yaw;
 
-mods::Dji *dji;
+mods::Dji* dji;
 
 volatile uint32_t heartbeat = 0;
 volatile int setup_step = 0;
 volatile uint8_t found_addr = 0;
 
-mods::Vl53l0x *vl53_1;
-mods::Vl53l0x *vl53_2;
+mods::Vl53l0x* vl53_1;
+mods::Vl53l0x* vl53_2;
 volatile bool vl53_1_ok = false;
 volatile bool vl53_2_ok = false;
 volatile float vl53_1_distance_mm = -1.0f;
@@ -62,13 +62,13 @@ volatile float vl53_dir_y = 0.0f;
 volatile float heading_offset_rad = 0.523599f;
 
 // omni3
-mechs::omni3::Ik *ik;
+mechs::omni3::Ik* ik;
 Transform2d target_transform = {0_mps, 0_mps, 0_radps};
 
-tr::controllers::SyncControlVelocity<mechs::omni3::Id, Qty<Radian>, Qty<Ampere>> *cvs;
+tr::controllers::SyncControlVelocity<mechs::omni3::Id, Qty<Radian>, Qty<Ampere>>* cvs;
 
-tr::hardwares::Timer *timer6;
-tr::hardwares::Timer *timer7;
+tr::hardwares::Timer* timer6;
+tr::hardwares::Timer* timer7;
 
 void get_terunet() {}
 void set_terunet() {}
@@ -77,12 +77,12 @@ void try_vl53_init();
 void setup() {
     disable_irq();
 
+    tn3 = new mods::Terunet3<shared::TerunetId>(new Fdcan(&hfdcan1));
+
     ik = new mechs::omni3::Ik(OMNI3_CONFIG);
 
     vl53_1 = new mods::Vl53l0x(&hi2c2);
     vl53_2 = new mods::Vl53l0x(&hi2c2);
-
-    tn3 = new mods::Terunet3<mechs::omni3::Id>(new Fdcan(&hfdcan1));
 
     espdbt = new mods::Espdbt(new hardwares::Uart(&huart1));
 
@@ -112,7 +112,7 @@ void setup() {
 }
 
 void try_vl53_init() {
-    vl53_retry_count++;
+    vl53_retry_count = vl53_retry_count + 1;
     setup_step = 2;
 
     // I2C バスリセット（ロック解除）
@@ -152,8 +152,7 @@ void try_vl53_init() {
 
 void loop() {
     heartbeat = HAL_GetTick();
-    get_terunet();
-
+    tn3->get({});
     espdbt->update();
     joy = espdbt->get();
 
@@ -214,7 +213,7 @@ void loop() {
             try_vl53_init();
 
             // 復帰後の入力ジャンプ防止
-            joy = mods::espdbt::Joy();
+            joy = mods::espdbt::State{};
         }
     }
 
@@ -233,13 +232,13 @@ void loop() {
         joy.sticks[mods::espdbt::Stick::R].x * target_transform_max.angvel * -1.0,
     };
     if (joy.buttons[mods::espdbt::Button::UP]) {
-        target_transform.velocity.y = Qty<MeterPerSecond>(-0.20_mps);
+        target_transform.velocity.y = Qty<MeterPerSecond>(0.20_mps);
     } else if (joy.buttons[mods::espdbt::Button::LEFT]) {
         target_transform.velocity.x = Qty<MeterPerSecond>(-0.20_mps);
     } else if (joy.buttons[mods::espdbt::Button::RIGHT]) {
         target_transform.velocity.x = Qty<MeterPerSecond>(0.20_mps);
     } else if (joy.buttons[mods::espdbt::Button::DOWN]) {
-        target_transform.velocity.y = Qty<MeterPerSecond>(0.20_mps);
+        target_transform.velocity.y = Qty<MeterPerSecond>(-0.20_mps);
     } else if (joy.buttons[mods::espdbt::Button::OPTIONS] ||
                joy.buttons[mods::espdbt::Button::SHARE]) {
         constexpr float target_rad = 0.0f;
@@ -322,12 +321,16 @@ void loop() {
         cvs->set_now_velocity(id, dji->get_now_head_angvel(OMNI3_TO_DJI[id]).unwrap());
         dji->set_target_current(OMNI3_TO_DJI[id], cvs->get_output(id));
     }
-
-    set_terunet();
+    // terunetで通信
+    tn3->set({
+        {shared::TerunetId::PET, joy.buttons[mods::espdbt::Button::L1]},
+        {shared::TerunetId::BELT, joy.buttons[mods::espdbt::Button::R1]},
+        {shared::TerunetId::ARM, joy.buttons[mods::espdbt::Button::L2]},
+    });
 }
 
 #ifdef HAL_TIM_MODULE_ENABLED
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim) {
     if (!initialized) return;
 
     // 演算用
@@ -336,6 +339,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
         for (const mechs::omni3::Id id : AllVariants<mechs::omni3::Id>()) {
             dji->set_target_current(OMNI3_TO_DJI[id], cvs->get_output(id));
         }
+
         return;
     }
 
@@ -349,7 +353,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 #endif
 
 #ifdef HAL_FDCAN_MODULE_ENABLED
-void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t rx_fifo0_its) {
+void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef* hfdcan, uint32_t rx_fifo0_its) {
     if (!initialized) {
         return;
     }
@@ -362,7 +366,7 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t rx_fifo0_it
     }
 }
 
-void HAL_FDCAN_RxFifo1Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t rx_fifo1_its) {
+void HAL_FDCAN_RxFifo1Callback(FDCAN_HandleTypeDef* hfdcan, uint32_t rx_fifo1_its) {
     if (!initialized) {
         return;
     }
@@ -375,7 +379,7 @@ void HAL_FDCAN_RxFifo1Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t rx_fifo1_it
     }
 }
 
-void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim) {
+void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef* htim) {
     if (!initialized) {
         return;
     }
@@ -388,7 +392,7 @@ void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim) {
 #endif
 // espdbt割り込み
 #ifdef HAL_UART_MODULE_ENABLED
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart) {
     if (!initialized) return;
     if (huart->Instance == USART1) {
         espdbt->rx();

@@ -49,6 +49,7 @@ volatile float vl53_1_distance_mm = -1.0f;
 volatile float vl53_2_distance_mm = -1.0f;
 volatile uint32_t vl53_1_last_update = 0;
 volatile uint32_t vl53_2_last_update = 0;
+volatile uint32_t vl53_retry_count = 0;
 
 volatile bool imu_updated = false;
 
@@ -111,7 +112,12 @@ void setup() {
 }
 
 void try_vl53_init() {
+    vl53_retry_count++;
     setup_step = 2;
+
+    // I2C バスリセット（ロック解除）
+    HAL_I2C_DeInit(&hi2c2);
+    HAL_I2C_Init(&hi2c2);
 
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_2, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_RESET);
@@ -158,38 +164,53 @@ void loop() {
         imu_updated = true;
     }
 
-    static uint32_t last_vl53_read_tick = 0;  // 普通に割り込みに書けば10になるって言われて気付いたけど、バグったら怖いから移動させられない
+    static uint32_t last_vl53_read_tick = 0;
     if (HAL_GetTick() - last_vl53_read_tick > 10) {
         last_vl53_read_tick = HAL_GetTick();
 
-        {
+        if (vl53_1_ok) {
             auto vl53_1_dist = vl53_1->read_distance_continuous();
             float raw_mm_1 = vl53_1_dist.get_value() * 1000.0f;
-            if (raw_mm_1 < 20.0f || raw_mm_1 > 3000.0f) {
+            if (raw_mm_1 < -1.5f) {
+                vl53_1_ok = false;
+                vl53_1_distance_mm = 3000.0f;
+            } else if (raw_mm_1 < 20.0f || raw_mm_1 > 3000.0f) {
                 vl53_1_distance_mm = 3000.0f;
             } else {
                 vl53_1_distance_mm = raw_mm_1;
+                vl53_1_last_update = HAL_GetTick();
             }
-            vl53_1_last_update = HAL_GetTick();
         }
 
-        {
+        if (vl53_2_ok) {
             auto vl53_2_dist = vl53_2->read_distance_continuous();
             float raw_mm_2 = vl53_2_dist.get_value() * 1000.0f;
-            if (raw_mm_2 < 20.0f || raw_mm_2 > 3000.0f) {
+            if (raw_mm_2 < -1.5f) {
+                vl53_2_ok = false;
+                vl53_2_distance_mm = 3000.0f;
+            } else if (raw_mm_2 < 20.0f || raw_mm_2 > 3000.0f) {
                 vl53_2_distance_mm = 3000.0f;
             } else {
                 vl53_2_distance_mm = raw_mm_2;
+                vl53_2_last_update = HAL_GetTick();
             }
-            vl53_2_last_update = HAL_GetTick();
         }
     }
 
     static uint32_t last_vl53_retry = 0;
 
     if (!vl53_1_ok || !vl53_2_ok) {
-        if (HAL_GetTick() - last_vl53_retry > 500) {
+        if (HAL_GetTick() - last_vl53_retry > 5000) {
             last_vl53_retry = HAL_GetTick();
+
+            // モーター安全停止（リトライ中のブロッキングで暴走防止）
+            target_transform = {0_mps, 0_mps, 0_radps};
+            ik->set_transform(target_transform);
+            ik->update();
+            for (const mechs::omni3::Id id : AllVariants<mechs::omni3::Id>()) {
+                cvs->set_target_velocity(id, 0.0_radps);
+            }
+
             try_vl53_init();
         }
     }
@@ -232,37 +253,48 @@ void loop() {
             target_transform.angvel = Qty<RadianPerSecond>(error * gain * 1.0_radps);
         }
     } else if (joy.buttons[mods::espdbt::Button::TRIANGLE]) {
-        float current_dist = vl53_1_distance_mm;
-        float error = current_dist - vl53_target_dist_mm;
-
-        if (std::abs(error) < vl53_tolerance_mm) {
+        if (!vl53_1_ok) {
             target_transform.velocity.x = 0.0_mps;
             target_transform.velocity.y = 0.0_mps;
         } else {
-            float vel_mag = -1.0f * error * vl53_p_gain;
+            float current_dist = vl53_1_distance_mm;
+            float error = current_dist - vl53_target_dist_mm;
 
-            if (vel_mag > vl53_max_speed_mps) vel_mag = vl53_max_speed_mps;
-            if (vel_mag < -vl53_max_speed_mps) vel_mag = -vl53_max_speed_mps;
+            if (std::abs(error) < vl53_tolerance_mm) {
+                target_transform.velocity.x = 0.0_mps;
+                target_transform.velocity.y = 0.0_mps;
+            } else {
+                float vel_mag = -1.0f * error * vl53_p_gain;
 
-            target_transform.velocity.x = (vel_mag * vl53_dir_x) * 1.0_mps;
-            target_transform.velocity.y = (vel_mag * vl53_dir_y) * 1.0_mps;
+                if (vel_mag > vl53_max_speed_mps) vel_mag = vl53_max_speed_mps;
+                if (vel_mag < -vl53_max_speed_mps)
+                    vel_mag = -vl53_max_speed_mps;
+
+                target_transform.velocity.x = (vel_mag * vl53_dir_x) * 1.0_mps;
+                target_transform.velocity.y = (vel_mag * vl53_dir_y) * 1.0_mps;
+            }
         }
-
     } else if (joy.buttons[mods::espdbt::Button::CROSS]) {
-        float current_dist = vl53_2_distance_mm;
-        float error = current_dist - vl53_target_dist_mm;
-
-        if (std::abs(error) < vl53_tolerance_mm) {
+        if (!vl53_2_ok) {
             target_transform.velocity.x = 0.0_mps;
             target_transform.velocity.y = 0.0_mps;
         } else {
-            float vel_mag = -1.0f * error * vl53_p_gain;
+            float current_dist = vl53_2_distance_mm;
+            float error = current_dist - vl53_target_dist_mm;
 
-            if (vel_mag > vl53_max_speed_mps) vel_mag = vl53_max_speed_mps;
-            if (vel_mag < -vl53_max_speed_mps) vel_mag = -vl53_max_speed_mps;
+            if (std::abs(error) < vl53_tolerance_mm) {
+                target_transform.velocity.x = 0.0_mps;
+                target_transform.velocity.y = 0.0_mps;
+            } else {
+                float vel_mag = -1.0f * error * vl53_p_gain;
 
-            target_transform.velocity.x = (vel_mag * -vl53_dir_x) * 1.0_mps;
-            target_transform.velocity.y = (vel_mag * -vl53_dir_y) * 1.0_mps;
+                if (vel_mag > vl53_max_speed_mps) vel_mag = vl53_max_speed_mps;
+                if (vel_mag < -vl53_max_speed_mps)
+                    vel_mag = -vl53_max_speed_mps;
+
+                target_transform.velocity.x = (vel_mag * -vl53_dir_x) * 1.0_mps;
+                target_transform.velocity.y = (vel_mag * -vl53_dir_y) * 1.0_mps;
+            }
         }
     }
 

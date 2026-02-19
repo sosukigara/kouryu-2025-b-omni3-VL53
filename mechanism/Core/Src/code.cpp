@@ -11,6 +11,7 @@ bool initialized = false;
 extern FDCAN_HandleTypeDef hfdcan1;
 extern FDCAN_HandleTypeDef hfdcan2;
 extern FDCAN_HandleTypeDef hfdcan3;
+extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim5;
@@ -26,6 +27,11 @@ Qty<Hertz> loop_frequency;
 
 mods::Terunet3<shared::TerunetId>* tn3;
 
+// TapeLED
+shared::State state;
+mods::Ws2812b<TAPELED_LENGTH>* tapeled;
+color::Rainbow rainbow(10_radps);
+
 // ペットボトル回収
 EnumMap<PetServo, mods::Ds3235*> pet_servo;
 bool pet_servo_state;
@@ -35,8 +41,10 @@ mods::Ds3235* arm_servo;
 bool arm_servo_state;
 
 // 射出
-mods::Dji *dji;
-ctls::ControlPosition<Qty<Radian>, Qty<Ampere>> belt_cp(TIMER_PERIOD, BELT_CP_PARAM, BELT_CP_CONFIG, true);
+mods::Dji* dji;
+ctls::ControlPosition<Qty<Radian>, Qty<Ampere>> belt_cp(
+    TIMER_PERIOD, BELT_CP_PARAM, BELT_CP_CONFIG, true
+);
 Qty<Radian> belt_target_angle = 0_rad;
 Qty<RadianPerSecond> belt_now_angvel;
 Qty<Radian> belt_now_angle;
@@ -52,6 +60,10 @@ void setup() {
     sw_timer = new mods::SoftwareTimer(tim_6, SW_TIMER_PERIODS);
 
     tn3 = new mods::Terunet3<shared::TerunetId>(new Fdcan(&hfdcan1));
+
+    tapeled = new mods::Ws2812b<TAPELED_LENGTH>(
+        new PwmDma<mods::Ws2812b<TAPELED_LENGTH>::PWM_LENGTH>(&htim1, TIM_CHANNEL_1)
+    );
 
     for (const PetServo servo : AllVariants<PetServo>()) {
         pet_servo[servo] = new mods::Ds3235(new Pwm(&htim2, PET_SERVO_CHANNEL[servo]));
@@ -70,7 +82,21 @@ void loop() {
     loop_wdt->reset();
     loop_wdt->capture();
 
-    tn3->get({});
+    tn3->get({
+        {shared::TerunetId::PET, pet_servo_state},
+        {shared::TerunetId::BELT, belt_shot},
+        {shared::TerunetId::ARM, arm_servo_state},
+        {shared::TerunetId::STATE, state}
+    });
+
+    // TapeLED
+    tapeled->set_color(0, TAPELED_LENGTH, [](size_t index) {
+        return rainbow.get(index * 0.3_rad);
+    });
+    // for (uint8_t i = 0; i < TAPELED_LENGTH; i++) {
+    //     tapeled->set_color(i, TAPELED_COLORS[state]);
+    // }
+    tapeled->send();
 
     // ペット回収
     for (const PetServo servo : AllVariants<PetServo>()) {
@@ -140,3 +166,12 @@ void HAL_FDCAN_RxFifo1Callback(FDCAN_HandleTypeDef* hfdcan, uint32_t rx_fifo1_it
     }
 }
 #endif
+
+void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef* htim) {
+    if (!initialized) return;
+
+    if (htim->Instance == TIM1) {
+        tapeled->finish();
+        return;
+    }
+}

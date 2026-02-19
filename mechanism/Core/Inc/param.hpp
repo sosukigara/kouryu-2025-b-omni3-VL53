@@ -3,6 +3,7 @@
 #include <main.h>
 
 #include <code.hpp>
+#include <functional>
 #include <shared.hpp>
 #include <tr/prelude.hpp>
 
@@ -13,10 +14,14 @@ constexpr EnumMap<mods::software_timer::Channel, Option<Qty<Second>>> SW_TIMER_P
 };
 
 // TapeLED
-constexpr uint8_t TAPELED_LENGTH = 100;
-constexpr EnumMap<shared::State, Color> TAPELED_COLORS = {
-    {shared::State::ESP_TIMEOUT, {255, 255, 255}},
-    {shared::State::TERUNET_TIMEOUT, {255, 255, 255}}
+constexpr uint8_t TAPELED_LENGTH = 73;
+constexpr Qty<Radian> RAINBOW_COLOR_DIFF = 0.3_rad;
+constexpr Qty<RadianPerSecond> RAINBOW_SPEED = 10_radps;
+inline color::Rainbow rainbow(RAINBOW_SPEED);
+inline color::Flow flow({11, 45, 14 }, 0.5_ps);
+inline const EnumMap<shared::State, std::function<Color(size_t)>> tapeled_colors = {
+    {shared::State::ESP_TIMEOUT, [](size_t i) { return flow.get(1.0F - (static_cast<float>(i) / static_cast<float>(TAPELED_LENGTH))); }},
+    {shared::State::TERUNET_TIMEOUT, [](size_t i){ return rainbow.get(i * RAINBOW_COLOR_DIFF); }}
 };
 
 enum class ServoState : uint8_t { OPEN, CLOSE };
@@ -25,7 +30,7 @@ enum class ServoState : uint8_t { OPEN, CLOSE };
 enum class PetServo : uint8_t { RIGHT, LEFT };
 
 constexpr EnumMap<PetServo, uint32_t> PET_SERVO_CHANNEL = {
-    {PetServo::RIGHT, TIM_CHANNEL_2}, {PetServo::LEFT, TIM_CHANNEL_3}
+    {PetServo::RIGHT, TIM_CHANNEL_3}, {PetServo::LEFT, TIM_CHANNEL_4}
 };
 
 constexpr EnumMap<PetServo, EnumMap<ServoState, Qty<Radian>>> PET_SERVO_ANGLE = {

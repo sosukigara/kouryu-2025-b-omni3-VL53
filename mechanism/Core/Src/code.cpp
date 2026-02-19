@@ -30,15 +30,18 @@ mods::Terunet3<shared::TerunetId>* tn3;
 // TapeLED
 shared::State state;
 mods::Ws2812b<TAPELED_LENGTH>* tapeled;
-color::Rainbow rainbow(10_radps);
 
 // ペットボトル回収
 EnumMap<PetServo, mods::Ds3235*> pet_servo;
-bool pet_servo_state;
+bool pet_servo_state = false;
+bool pet_servo_button_state;
+ModeManager<bool> pet_mode_manager(false);
 
 // アーム
 mods::Ds3235* arm_servo;
-bool arm_servo_state;
+bool arm_servo_state = false;
+bool arm_servo_button_state;
+ModeManager<bool> arm_mode_manager(false);
 
 // 射出
 mods::Dji* dji;
@@ -49,6 +52,7 @@ Qty<Radian> belt_target_angle = 0_rad;
 Qty<RadianPerSecond> belt_now_angvel;
 Qty<Radian> belt_now_angle;
 bool belt_shot;
+ModeManager<bool> belt_mode_manager(false);
 
 void setup() {
     disable_irq();
@@ -69,7 +73,7 @@ void setup() {
         pet_servo[servo] = new mods::Ds3235(new Pwm(&htim2, PET_SERVO_CHANNEL[servo]));
     }
 
-    arm_servo = new mods::Ds3235(new Pwm(&htim3, TIM_CHANNEL_3));
+    arm_servo = new mods::Ds3235(new Pwm(&htim3, TIM_CHANNEL_4));
 
     dji = new mods::Dji(new Fdcan(&hfdcan3), TIMER_PERIOD, DJI_DETAILS);
 
@@ -83,22 +87,24 @@ void loop() {
     loop_wdt->capture();
 
     tn3->get({
-        {shared::TerunetId::PET, pet_servo_state},
+        {shared::TerunetId::PET, pet_servo_button_state},
         {shared::TerunetId::BELT, belt_shot},
-        {shared::TerunetId::ARM, arm_servo_state},
+        {shared::TerunetId::ARM, arm_servo_button_state},
         {shared::TerunetId::STATE, state}
     });
 
     // TapeLED
-    tapeled->set_color(0, TAPELED_LENGTH, [](size_t index) {
-        return rainbow.get(index * 0.3_rad);
-    });
-    // for (uint8_t i = 0; i < TAPELED_LENGTH; i++) {
-    //     tapeled->set_color(i, TAPELED_COLORS[state]);
-    // }
+    for (uint8_t i = 0; i < TAPELED_LENGTH; i++) {
+        tapeled->set_color(i, tapeled_colors[state](i));
+    }
     tapeled->send();
 
     // ペット回収
+    pet_mode_manager.set_next_mode(pet_servo_button_state);
+    pet_mode_manager.update();
+    if (pet_mode_manager.is_first_loop_of(true)) {
+        pet_servo_state = !pet_servo_state;
+    }
     for (const PetServo servo : AllVariants<PetServo>()) {
         pet_servo[servo]->set_angle(
             pet_servo_state ? PET_SERVO_ANGLE[servo][ServoState::OPEN]
@@ -107,12 +113,19 @@ void loop() {
     }
 
     // アーム
+    arm_mode_manager.set_next_mode(arm_servo_button_state);
+    arm_mode_manager.update();
+    if (arm_mode_manager.is_first_loop_of(true)) {
+        arm_servo_state = !arm_servo_state;
+    }
     arm_servo->set_angle(
         arm_servo_state ? ARM_SERVO_ANGLE[ServoState::OPEN] : ARM_SERVO_ANGLE[ServoState::CLOSE]
     );
 
     // 射出
-    if (belt_shot) {
+    belt_mode_manager.set_next_mode(belt_shot);
+    belt_mode_manager.update();
+    if (belt_mode_manager.is_first_loop_of(true)) {
         belt_target_angle = -BELT_LENGTH / BELT_RADIUS;
     }
     belt_cp.set_param(BELT_CP_PARAM);
